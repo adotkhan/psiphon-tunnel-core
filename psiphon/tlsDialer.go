@@ -955,6 +955,8 @@ func getUTLSClientHelloID(
 		return utls.HelloFirefox_99, nil, nil
 	case protocol.TLS_PROFILE_FIREFOX_105:
 		return utls.HelloFirefox_105, nil, nil
+	case protocol.TLS_PROFILE_FIREFOX_120:
+		return utls.HelloFirefox_120, nil, nil
 	case protocol.TLS_PROFILE_RANDOMIZED:
 		return utls.HelloRandomized, nil, nil
 	}

@@ -35,17 +35,17 @@ require (
 	github.com/pion/sctp v1.8.8
 	github.com/refraction-networking/conjure v0.7.11-0.20240130155008-c8df96195ab2
 	github.com/refraction-networking/gotapdance v1.7.10
-	github.com/refraction-networking/utls v1.6.4
+	github.com/refraction-networking/utls v1.6.5
 	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
-	golang.org/x/crypto v0.19.0
-	golang.org/x/net v0.21.0
+	golang.org/x/crypto v0.21.0
+	golang.org/x/net v0.23.0
 	golang.org/x/sync v0.2.0
-	golang.org/x/sys v0.17.0
-	golang.org/x/term v0.17.0
+	golang.org/x/sys v0.18.0
+	golang.org/x/term v0.18.0
 )
 
 require (
