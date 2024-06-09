@@ -83,6 +83,7 @@ fi
 
 # Builds Psi.xcframework library for the given platform.
 # Psi.xcframework is the glue code between Go and Objective-C.
+# https://pkg.go.dev/golang.org/x/mobile/cmd/gomobile
 #
 # - Parameter 1: `gomobile bind` -target option value
 # - Parameter 2: Variable name where gomobile output (Psi.xcframework) will be set to.
@@ -181,18 +182,18 @@ rm -rf "${BUILD_DIR}"
 
 #
 # Builds Psi.xcframework
+# Targe is comma delimited list of comma delimited Apple platforms: https://pkg.go.dev/golang.org/x/mobile/cmd/gomobile
 #
-IOS_PSI_FRAMEWORK=""
-gomobile_build_for_platform "ios" IOS_PSI_FRAMEWORK
-
-echo "$IOS_PSI_FRAMEWORK"
+APPLE_PSI_GO_FRAMEWORK=""
+gomobile_build_for_platform "ios,macos" APPLE_PSI_GO_FRAMEWORK
+echo "$APPLE_PSI_GO_FRAMEWORK"
 
 #
 # Copies gobind output Psi.xcframework to the TunnelCore Xcode project
 #
 
 rm -rf "${BASE_DIR}/PsiphonTunnel/PsiphonTunnel/Psi.xcframework"
-cp -r "${IOS_PSI_FRAMEWORK}" "${BASE_DIR}/PsiphonTunnel/PsiphonTunnel"
+cp -r "${APPLE_PSI_GO_FRAMEWORK}" "${BASE_DIR}/PsiphonTunnel/PsiphonTunnel"
 
 #
 # Build PsiphonTunnel framework for iOS.
@@ -217,19 +218,18 @@ SKIP_INSTALL="NO" \
 EXCLUDED_ARCHS="armv7"
 
 
-# Build PsiphonTunnel framework for simulator.
 #
-# Note:
-# - Excludes 32-bit Intel: EXCLUDED_ARCHS="i386".
+# Build PsiphonTunnel framework for iOS.
+#
 
-SIMULATOR_ARCHIVE="${BUILD_DIR}/simulator.xcarchive"
+MACOS_ARCHIVE="${BUILD_DIR}/macos.xcarchive"
 
 xcodebuild clean archive \
 -project "${UMBRELLA_FRAMEWORK_XCODE_PROJECT}" \
 -scheme "PsiphonTunnel" \
 -configuration "Release" \
--sdk iphonesimulator \
--archivePath "${SIMULATOR_ARCHIVE}" \
+-sdk macosx \
+-archivePath "${MACOS_ARCHIVE}" \
 CODE_SIGN_IDENTITY="" \
 CODE_SIGNING_REQUIRED="NO" \
 CODE_SIGN_ENTITLEMENTS="" \
@@ -238,7 +238,8 @@ STRIP_BITCODE_FROM_COPIED_FILES="NO" \
 BUILD_LIBRARY_FOR_DISTRIBUTION="YES" \
 ONLY_ACTIVE_ARCH="NO" \
 SKIP_INSTALL="NO" \
-EXCLUDED_ARCHS="i386"
+EXCLUDED_ARCHS="armv7"
+
 
 #
 # Bundles the generated frameworks (for iOS and simulator) into a single PsiphonTunnel.xcframework
@@ -246,8 +247,8 @@ EXCLUDED_ARCHS="i386"
 xcodebuild -create-xcframework \
 -framework "${IOS_ARCHIVE}/Products/Library/Frameworks/PsiphonTunnel.framework" \
 -debug-symbols "${IOS_ARCHIVE}/dSYMs/PsiphonTunnel.framework.dSYM" \
--framework "${SIMULATOR_ARCHIVE}/Products/Library/Frameworks/PsiphonTunnel.framework" \
--debug-symbols "${SIMULATOR_ARCHIVE}/dSYMs/PsiphonTunnel.framework.dSYM" \
+-framework "${MACOS_ARCHIVE}/Products/Library/Frameworks/PsiphonTunnel.framework" \
+-debug-symbols "${MACOS_ARCHIVE}/dSYMs/PsiphonTunnel.framework.dSYM" \
 -output "${BUILD_DIR}/PsiphonTunnel.xcframework"
 
 

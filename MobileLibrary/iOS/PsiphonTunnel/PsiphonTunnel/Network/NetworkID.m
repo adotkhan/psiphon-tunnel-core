@@ -23,6 +23,11 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
 
+#if TARGET_OS_OSX
+#import <CoreWLAN/CoreWLAN.h>
+#import <SystemConfiguration/SystemConfiguration.h>
+#endif
+
 @implementation NetworkID
 
 // See comment in header.
@@ -49,6 +54,15 @@
     NSMutableString *networkID = [NSMutableString stringWithString:@"UNKNOWN"];
     if (currentNetworkStatus == NetworkReachabilityReachableViaWiFi) {
         [networkID setString:@"WIFI"];
+        
+#if TARGET_OS_OSX
+        CWWiFiClient *wifiClient = [CWWiFiClient sharedWiFiClient];
+        NSString *bssid = [[wifiClient interface] bssid];
+        if (bssid != nil) {
+            [networkID appendFormat:@"-%@", bssid];
+        }
+        
+#else
         NSArray *networkInterfaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
         for (NSString *networkInterfaceName in networkInterfaceNames) {
             NSDictionary *networkInterfaceInfo = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)networkInterfaceName);
@@ -56,7 +70,11 @@
                 [networkID appendFormat:@"-%@", networkInterfaceInfo[(__bridge NSString*)kCNNetworkInfoKeyBSSID]];
             }
         }
-    } else if (currentNetworkStatus == NetworkReachabilityReachableViaCellular) {
+#endif
+        
+    }
+#if TARGET_OS_IOS
+    else if (currentNetworkStatus == NetworkReachabilityReachableViaCellular) {
         [networkID setString:@"MOBILE"];
 
         if (@available(iOS 16.0, *)) {
@@ -87,7 +105,9 @@
                 [networkID appendFormat:@"-%@-%@", mcc, mnc];
             }
         }
-    } else if (currentNetworkStatus == NetworkReachabilityReachableViaWired) {
+    }
+#endif
+    else if (currentNetworkStatus == NetworkReachabilityReachableViaWired) {
         [networkID setString:@"WIRED"];
 
         NSError *err;
@@ -109,4 +129,25 @@
     return networkID;
 }
 
+#if TARGET_OS_OSX
++ (NSString *_Nullable)macAddressForEthernet {
+    NSArray *allInterfaces = (__bridge_transfer NSArray *)SCNetworkInterfaceCopyAll();
+    
+    for (id interface in allInterfaces) {
+        SCNetworkInterfaceRef scInterface = (__bridge SCNetworkInterfaceRef)interface;
+        NSString *interfaceName = (__bridge_transfer NSString *)SCNetworkInterfaceGetBSDName(scInterface);
+        
+        // Check if the interface is Ethernet
+        if ([interfaceName hasPrefix:@"en"]) {
+            // Fetch the MAC address
+            NSString *macAddress = (__bridge_transfer NSString *)SCNetworkInterfaceGetHardwareAddressString(scInterface);
+            return macAddress;
+        }
+    }
+    return nil;
+}
+#endif
+
+
 @end
+

@@ -25,8 +25,11 @@
 #import "Reachability.h"
 #import "DefaultRouteMonitor.h"
 #import "ReachabilityProtocol.h"
-#import "JailbreakCheck.h"
 #import "PsiphonClientPlatform.h"
+
+#if TARGET_OS_IOS
+#import "JailbreakCheck.h"
+#endif
 
 //! Project version number for PsiphonTunnel.
 FOUNDATION_EXPORT double PsiphonTunnelVersionNumber;

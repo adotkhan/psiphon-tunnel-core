@@ -18,8 +18,11 @@
  */
 
 #import "PsiphonClientPlatform.h"
-#import <UIKit/UIKit.h>
+
+#if TARGET_OS_IOS
 #import "JailbreakCheck.h"
+#import <UIKit/UIKit.h>
+#endif
 
 @implementation PsiphonClientPlatform
 
@@ -38,9 +41,8 @@
     }
 
     // Like "10.2.1"
-    NSString *systemVersion = [[[[UIDevice currentDevice]systemVersion]
-                                stringByReplacingOccurrencesOfString:@"_" withString:@"-"]
-                               stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+    NSOperatingSystemVersion osVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+    NSString *systemVersion = [NSString stringWithFormat:@"%ld.%ld.%ld", osVersion.majorVersion, osVersion.minorVersion, (long)osVersion.patchVersion];
 
     // Like "com.psiphon3.browser"
     NSString *bundleIdentifier = [[[[NSBundle mainBundle] bundleIdentifier]
@@ -48,6 +50,7 @@
                                   stringByReplacingOccurrencesOfString:@" " withString:@"-"];
 
 
+#if TARGET_OS_IOS
     if (isiOSAppOnMac == TRUE) {
 
         // iOS app running on ARM Mac.
@@ -90,6 +93,25 @@
                 bundleIdentifier];
 
     }
+    
+#elif TARGET_OS_OSX
+    
+    // macOS
+    
+    NSString *systemName = @"macOS";
+
+    return [NSString stringWithFormat:@"%@_%@_%@",
+            systemName,
+            systemVersion,
+            bundleIdentifier];
+    
+#else
+    
+    return [NSString stringWithFormat:@"unsupported_%@_%@",
+            systemVersion,
+            bundleIdentifier];
+    
+#endif
 
 }
 

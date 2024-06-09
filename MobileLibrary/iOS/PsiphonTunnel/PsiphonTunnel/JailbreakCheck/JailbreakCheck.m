@@ -25,7 +25,6 @@
 
 
 #import <Foundation/Foundation.h>
-#import "UIKit/UIKit.h"
 #import <sys/stat.h>
 #import "JailbreakCheck.h"
 
