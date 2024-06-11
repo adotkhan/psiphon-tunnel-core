@@ -26,6 +26,12 @@ export GO111MODULE=off
 # gomobile executable.
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin
 
+# Check if GOROOT is already defined
+if [[ ! ${GOROOT+$GOROOT} ]]; then
+  echo "GOROOT env variable not defined, using 'go env GOROOT'"
+  export GOROOT=$(go env GOROOT)
+fi
+
 # $GOROOT/bin allows build automation to provide various Go versions dynamically.
 # As gomobile would be installed at $GOPATH/bin, there is minimal risk that
 # adding $GOROOT/bin will run an unexpected gomobile binary.
