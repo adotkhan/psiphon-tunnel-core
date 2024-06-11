@@ -22,13 +22,14 @@
  *
  */
 
-#import "Reachability.h"
-#import "DefaultRouteMonitor.h"
-#import "ReachabilityProtocol.h"
-#import "PsiphonClientPlatform.h"
+#import <TargetConditionals.h>
+#import <PsiphonTunnel/Reachability.h>
+#import <PsiphonTunnel/DefaultRouteMonitor.h>
+#import <PsiphonTunnel/ReachabilityProtocol.h>
+#import <PsiphonTunnel/PsiphonClientPlatform.h>
 
 #if TARGET_OS_IOS
-#import "JailbreakCheck.h"
+#import <PsiphonTunnel/JailbreakCheck.h>
 #endif
 
 //! Project version number for PsiphonTunnel.

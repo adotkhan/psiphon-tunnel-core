@@ -547,7 +547,7 @@ typedef NS_ERROR_ENUM(PsiphonTunnelErrorDomain, PsiphonTunnelErrorCode) {
                           usingNoticeFiles:(BOOL * _Nonnull)usingNoticeFiles
                                  sessionID:(NSString * _Nonnull)sessionID
                                 logMessage:(void (^)(NSString * _Nonnull))logMessage
-                                     error:(NSError *_Nullable *_Nonnull)outError {
+                                     error:(NSError *__autoreleasing _Nullable *_Nonnull)outError {
 
     *outError = nil;
     

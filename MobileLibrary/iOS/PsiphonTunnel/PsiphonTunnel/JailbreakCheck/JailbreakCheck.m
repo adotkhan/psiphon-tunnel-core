@@ -26,13 +26,13 @@
 
 #import <Foundation/Foundation.h>
 #import <sys/stat.h>
-#import "JailbreakCheck.h"
+#import <PsiphonTunnel/JailbreakCheck.h>
 
 
 @implementation JailbreakCheck
 
 
-BOOL checkReadWritePermissions()
+BOOL checkReadWritePermissions(void)
 {
     // UIApplication:sharedApplication is disallowed in an application exetension
     // (such as would be used by a whole-device Psiphon VPN). We may re-enable
@@ -73,7 +73,7 @@ BOOL checkJailbreakSymLink(NSString *checkPath)
     return FALSE;
 }
 
-BOOL checkJailbreakSymlinks()
+BOOL checkJailbreakSymlinks(void)
 {
     NSArray *linksChecks = @[@"/Applications",
                              @"/usr/libexec",
@@ -103,7 +103,7 @@ BOOL checkJailbreakFile(NSString *checkPath)
     return FALSE;
 }
 
-BOOL checkJailbreakFiles()
+BOOL checkJailbreakFiles(void)
 {
     NSArray *fileChecks = @[@"/bin/bash",
                             @"/etc/apt",

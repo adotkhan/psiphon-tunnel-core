@@ -19,7 +19,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Network/path.h>
-#import "ReachabilityProtocol.h"
+#import <PsiphonTunnel/ReachabilityProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
