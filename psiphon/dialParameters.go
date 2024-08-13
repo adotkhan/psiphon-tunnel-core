@@ -867,7 +867,8 @@ func MakeDialParameters(
 			}
 		}
 
-		if isFronted {
+		if isFronted || protocol.QUICVersionHasRandomizedClientHello(dialParams.QUICVersion) {
+			// Obfuscated PSK is currently not supproted with randomized Client Hello.
 			dialParams.QUICDisableObfuscatedPSK = true
 		} else {
 			dialParams.QUICDisableObfuscatedPSK = p.Bool(parameters.QUICDisableObfuscatedPSK)

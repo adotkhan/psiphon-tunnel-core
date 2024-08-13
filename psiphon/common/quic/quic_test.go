@@ -240,7 +240,9 @@ func runQUIC(
 			}
 
 			// Checks if PSK was sent by the client and accepted by the server.
-			if isIETF(quicVersion) && !disableObfuscatedPSK {
+			// Obfuscated PSK is currently not supported with randomized Client Hello.
+			if isIETF(quicVersion) && !isClientHelloRandomized(quicVersion) {
+
 				ietfQUICConn, ok := conn.(*Conn).connection.(*ietfQUICConnection)
 				if !ok {
 					return errors.TraceNew("expected ietfQUICConnection type")
@@ -248,13 +250,13 @@ func runQUIC(
 
 				// Checks if the client sent a PSK in the ClientHello.
 				// Validity of the PSK is not checked.
-				if !ietfQUICConn.resumedSession {
-					return errors.TraceNew("PSK was not sent by the client")
+				if ietfQUICConn.resumedSession == disableObfuscatedPSK {
+					return errors.TraceNew("unexpected PSK presence")
 				}
 
 				// Checks if the server accepted the PSK.
-				if !ietfQUICConn.ConnectionState().TLS.DidResume {
-					return errors.TraceNew("unexpected session resumption failure")
+				if ietfQUICConn.ConnectionState().TLS.DidResume == disableObfuscatedPSK {
+					return errors.TraceNew("unexpected PSK acceptance")
 				}
 			}
 
