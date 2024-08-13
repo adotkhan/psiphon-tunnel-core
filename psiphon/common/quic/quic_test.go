@@ -44,21 +44,21 @@ import (
 func TestQUIC(t *testing.T) {
 	for quicVersion := range supportedVersionNumbers {
 
-		for _, disableObfuscatedPSK := range []bool{true, false} {
-			t.Run(fmt.Sprintf("%s|PSK disabled=%v", quicVersion, disableObfuscatedPSK), func(t *testing.T) {
+		for _, obfuscatedPSK := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s|PSK disabled=%v", quicVersion, obfuscatedPSK), func(t *testing.T) {
 				if isGQUIC(quicVersion) && !GQUICEnabled() {
 					t.Skipf("gQUIC is not enabled")
 				}
-				runQUIC(t, quicVersion, GQUICEnabled(), false, disableObfuscatedPSK)
+				runQUIC(t, quicVersion, GQUICEnabled(), false, obfuscatedPSK)
 			})
 			if isIETF(quicVersion) {
-				t.Run(fmt.Sprintf("%s (invoke anti-probing)|PSK disabled=%v", quicVersion, disableObfuscatedPSK), func(t *testing.T) {
-					runQUIC(t, quicVersion, GQUICEnabled(), true, disableObfuscatedPSK)
+				t.Run(fmt.Sprintf("%s (invoke anti-probing)|PSK disabled=%v", quicVersion, obfuscatedPSK), func(t *testing.T) {
+					runQUIC(t, quicVersion, GQUICEnabled(), true, obfuscatedPSK)
 				})
 			}
 			if isIETF(quicVersion) {
-				t.Run(fmt.Sprintf("%s (disable gQUIC)|PSK disabled=%v", quicVersion, disableObfuscatedPSK), func(t *testing.T) {
-					runQUIC(t, quicVersion, false, false, disableObfuscatedPSK)
+				t.Run(fmt.Sprintf("%s (disable gQUIC)|PSK disabled=%v", quicVersion, obfuscatedPSK), func(t *testing.T) {
+					runQUIC(t, quicVersion, false, false, obfuscatedPSK)
 				})
 			}
 		}
@@ -70,7 +70,7 @@ func runQUIC(
 	quicVersion string,
 	enableGQUIC bool,
 	invokeAntiProbing bool,
-	disableObfuscatedPSK bool) {
+	obfuscatedPSK bool) {
 
 	initGoroutines := getGoroutines()
 
@@ -214,7 +214,7 @@ func runQUIC(
 				nil,
 				disablePathMTUDiscovery,
 				true,
-				disableObfuscatedPSK,
+				obfuscatedPSK,
 				clientSessionCache)
 
 			if invokeAntiProbing {
@@ -250,12 +250,12 @@ func runQUIC(
 
 				// Checks if the client sent a PSK in the ClientHello.
 				// Validity of the PSK is not checked.
-				if ietfQUICConn.resumedSession == disableObfuscatedPSK {
+				if ietfQUICConn.resumedSession != obfuscatedPSK {
 					return errors.TraceNew("unexpected PSK presence")
 				}
 
 				// Checks if the server accepted the PSK.
-				if ietfQUICConn.ConnectionState().TLS.DidResume == disableObfuscatedPSK {
+				if ietfQUICConn.ConnectionState().TLS.DidResume != obfuscatedPSK {
 					return errors.TraceNew("unexpected PSK acceptance")
 				}
 			}

@@ -935,7 +935,7 @@ func dialTunnel(
 			dialParams.ObfuscatedQUICNonceTransformerParameters,
 			dialParams.QUICDisablePathMTUDiscovery,
 			dialParams.QUICDialEarly,
-			dialParams.QUICDisableObfuscatedPSK,
+			dialParams.QUICObfuscatedPSK,
 			dialParams.quicTLSClientSessionCache)
 		if err != nil {
 			return nil, errors.Trace(err)

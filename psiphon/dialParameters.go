@@ -133,7 +133,7 @@ type DialParameters struct {
 	ObfuscatedQUICPaddingSeed                *prng.Seed
 	ObfuscatedQUICNonceTransformerParameters *transforms.ObfuscatorSeedTransformerParameters
 	QUICDialEarly                            bool
-	QUICDisableObfuscatedPSK                 bool
+	QUICObfuscatedPSK                        bool
 	QUICDisablePathMTUDiscovery              bool
 
 	ConjureCachedRegistrationTTL        time.Duration
@@ -170,7 +170,7 @@ type DialParameters struct {
 
 	quicTLSClientSessionCache *common.TLSClientSessionCacheWrapper  `json:"-"`
 	tlsClientSessionCache     *common.UtlsClientSessionCacheWrapper `json:"-"`
-	
+
 	inproxyDialInitialized         bool                         `json:"-"`
 	inproxyBrokerClient            *inproxy.BrokerClient        `json:"-"`
 	inproxyBrokerDialParameters    *InproxyBrokerDialParameters `json:"-"`
@@ -868,13 +868,18 @@ func MakeDialParameters(
 		}
 
 		if isFronted || protocol.QUICVersionHasRandomizedClientHello(dialParams.QUICVersion) {
-			// Obfuscated PSK is currently not supproted with randomized Client Hello.
-			dialParams.QUICDisableObfuscatedPSK = true
+			// Obfuscated PSK is currently not supported with randomized Client Hello.
+			dialParams.QUICObfuscatedPSK = false
 		} else {
-			dialParams.QUICDisableObfuscatedPSK = p.Bool(parameters.QUICDisableObfuscatedPSK)
+			dialParams.QUICObfuscatedPSK = p.WeightedCoinFlip(parameters.QUICObfuscatedPSKProbability)
 		}
 
-		dialParams.QUICDialEarly = p.WeightedCoinFlip(parameters.QUICDialEarlyProbability)
+		if dialParams.QUICObfuscatedPSK {
+			// Unconditionally enable QUIC early data when using obfuscated PSK.
+			dialParams.QUICDialEarly = true
+		} else {
+			dialParams.QUICDialEarly = p.WeightedCoinFlip(parameters.QUICDialEarlyProbability)
+		}
 
 		dialParams.QUICDisablePathMTUDiscovery =
 			protocol.QUICVersionUsesPathMTUDiscovery(dialParams.QUICVersion) &&

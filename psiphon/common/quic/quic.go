@@ -404,7 +404,7 @@ func Dial(
 	obfuscationNonceTransformerParameters *transforms.ObfuscatorSeedTransformerParameters,
 	disablePathMTUDiscovery bool,
 	dialEarly bool,
-	disableObfuscatedPSK bool,
+	obfuscatedPSK bool,
 	tlsClientSessionCache *common.TLSClientSessionCacheWrapper) (net.Conn, error) {
 
 	if quicVersion == "" {
@@ -513,9 +513,9 @@ func Dial(
 		}
 	}
 
-	obfuscatedSessionTicketKey := obfuscationKey
-	if disableObfuscatedPSK {
-		obfuscatedSessionTicketKey = ""
+	obfuscatedSessionTicketKey := ""
+	if obfuscatedPSK {
+		obfuscatedSessionTicketKey = obfuscationKey
 	}
 
 	connection, err := dialQUIC(
