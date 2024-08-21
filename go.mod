@@ -35,9 +35,9 @@ require (
 	github.com/Psiphon-Labs/bolt v0.0.0-20200624191537-23cedaef7ad7
 	github.com/Psiphon-Labs/consistent v0.0.0-20240322131436-20aaa4e05737
 	github.com/Psiphon-Labs/goptlib v0.0.0-20200406165125-c0e32a7a3464
-	github.com/Psiphon-Labs/psiphon-tls v0.0.0-20240812172553-e7a4dbd0bf2b
-	github.com/Psiphon-Labs/quic-go v0.0.0-20240424181006-45545f5e1536
-	github.com/Psiphon-Labs/utls v1.1.1-0.20240818221737-55b85574734b
+	github.com/Psiphon-Labs/psiphon-tls v0.0.0-20240821033621-7fa374fbb36f
+	github.com/Psiphon-Labs/quic-go v0.0.0-20240821043540-ea73c46925a3
+	github.com/Psiphon-Labs/utls v1.1.1-0.20240819000705-7e7f7e433122
 	github.com/armon/go-proxyproto v0.0.0-20180202201750-5b7edb60ff5f
 	github.com/bifurcation/mint v0.0.0-20180306135233-198357931e61
 	github.com/bits-and-blooms/bloom/v3 v3.6.0
