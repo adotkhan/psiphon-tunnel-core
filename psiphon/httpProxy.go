@@ -236,7 +236,7 @@ func (proxy *HttpProxy) ServeHTTP(responseWriter http.ResponseWriter, request *h
 		go func() {
 			err := proxy.httpConnectHandler(conn, request.URL.Host)
 			if err != nil {
-				NoticeWarning("%s", errors.Trace(err))
+				NoticeWarningf("%s", errors.Trace(err))
 			}
 		}()
 	} else if request.URL.IsAbs() {
@@ -310,7 +310,7 @@ func (proxy *HttpProxy) urlProxyHandler(responseWriter http.ResponseWriter, requ
 		err = std_errors.New("missing origin URL")
 	}
 	if err != nil {
-		NoticeWarning("%s", errors.Trace(common.RedactURLError(err)))
+		NoticeWarningf("%s", errors.Trace(common.RedactURLError(err)))
 		forceClose(responseWriter)
 		return
 	}
@@ -318,7 +318,7 @@ func (proxy *HttpProxy) urlProxyHandler(responseWriter http.ResponseWriter, requ
 	// Origin URL must be well-formed, absolute, and have a scheme of "http" or "https"
 	originURL, err := common.SafeParseRequestURI(originURLString)
 	if err != nil {
-		NoticeWarning("%s", errors.Trace(common.RedactURLError(err)))
+		NoticeWarningf("%s", errors.Trace(common.RedactURLError(err)))
 		forceClose(responseWriter)
 		return
 	}
@@ -497,7 +497,7 @@ func (proxy *HttpProxy) relayHTTPRequest(
 	}
 
 	if err != nil {
-		NoticeWarning("%s", errors.Trace(common.RedactURLError(err)))
+		NoticeWarningf("%s", errors.Trace(common.RedactURLError(err)))
 		forceClose(responseWriter)
 		return
 	}
@@ -516,7 +516,7 @@ func (proxy *HttpProxy) relayHTTPRequest(
 		}
 
 		if err != nil {
-			NoticeWarning("URL proxy rewrite failed for %s: %s", key, errors.Trace(err))
+			NoticeWarningf("URL proxy rewrite failed for %s: %s", key, errors.Trace(err))
 			forceClose(responseWriter)
 			response.Body.Close()
 			return
@@ -560,21 +560,21 @@ func (proxy *HttpProxy) relayHTTPRequest(
 			response.StatusCode,
 			http.StatusText(response.StatusCode))
 		if err != nil {
-			NoticeWarning("write status line failed: %s", errors.Trace(err))
+			NoticeWarningf("write status line failed: %s", errors.Trace(err))
 			conn.Close()
 			return
 		}
 
 		err = responseWriter.Header().Write(conn)
 		if err != nil {
-			NoticeWarning("write headers failed: %s", errors.Trace(err))
+			NoticeWarningf("write headers failed: %s", errors.Trace(err))
 			conn.Close()
 			return
 		}
 
 		_, err = RelayCopyBuffer(proxy.config, conn, response.Body)
 		if err != nil {
-			NoticeWarning("write body failed: %s", errors.Trace(err))
+			NoticeWarningf("write body failed: %s", errors.Trace(err))
 			conn.Close()
 			return
 		}
@@ -586,7 +586,7 @@ func (proxy *HttpProxy) relayHTTPRequest(
 		responseWriter.WriteHeader(response.StatusCode)
 		_, err = RelayCopyBuffer(proxy.config, responseWriter, response.Body)
 		if err != nil {
-			NoticeWarning("%s", errors.Trace(err))
+			NoticeWarningf("%s", errors.Trace(err))
 			forceClose(responseWriter)
 			return
 		}
@@ -606,12 +606,12 @@ func forceClose(responseWriter http.ResponseWriter) {
 func hijack(responseWriter http.ResponseWriter) net.Conn {
 	hijacker, ok := responseWriter.(http.Hijacker)
 	if !ok {
-		NoticeWarning("%s", errors.TraceNew("responseWriter is not an http.Hijacker"))
+		NoticeWarningf("%s", errors.TraceNew("responseWriter is not an http.Hijacker"))
 		return nil
 	}
 	conn, _, err := hijacker.Hijack()
 	if err != nil {
-		NoticeWarning("%s", errors.Tracef("responseWriter hijack failed: %s", err))
+		NoticeWarningf("%s", errors.Tracef("responseWriter hijack failed: %s", err))
 		return nil
 	}
 	return conn

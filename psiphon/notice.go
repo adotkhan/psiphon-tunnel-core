@@ -400,21 +400,42 @@ func (nl *noticeLogger) outputNoticeToRotatingFile(output []byte) error {
 }
 
 // NoticeInfo is an informational message
-func NoticeInfo(format string, args ...interface{}) {
+func NoticeInfo(message string) {
+	singletonNoticeLogger.outputNotice(
+		"Info", noticeIsDiagnostic,
+		"message", message)
+}
+
+// NoticeWarning is a warning message; typically a recoverable error condition
+func NoticeWarning(message string) {
+	singletonNoticeLogger.outputNotice(
+		"Warning", noticeIsDiagnostic,
+		"message", message)
+}
+
+// NoticeError is an error message; typically an unrecoverable error condition
+func NoticeError(message string) {
+	singletonNoticeLogger.outputNotice(
+		"Error", noticeIsDiagnostic,
+		"message", message)
+}
+
+// NoticeInfof is an informational message
+func NoticeInfof(format string, args ...interface{}) {
 	singletonNoticeLogger.outputNotice(
 		"Info", noticeIsDiagnostic,
 		"message", fmt.Sprintf(format, args...))
 }
 
-// NoticeWarning is a warning message; typically a recoverable error condition
-func NoticeWarning(format string, args ...interface{}) {
+// NoticeWarningf is a warning message; typically a recoverable error condition
+func NoticeWarningf(format string, args ...interface{}) {
 	singletonNoticeLogger.outputNotice(
 		"Warning", noticeIsDiagnostic,
 		"message", fmt.Sprintf(format, args...))
 }
 
-// NoticeError is an error message; typically an unrecoverable error condition
-func NoticeError(format string, args ...interface{}) {
+// NoticeErrorf is an error message; typically an unrecoverable error condition
+func NoticeErrorf(format string, args ...interface{}) {
 	singletonNoticeLogger.outputNotice(
 		"Error", noticeIsDiagnostic,
 		"message", fmt.Sprintf(format, args...))

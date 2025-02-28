@@ -328,7 +328,7 @@ func (serverContext *ServerContext) doHandshakeRequest(ignoreStatsRegexps bool) 
 		err = protocol.ValidateServerEntryFields(serverEntryFields)
 		if err != nil {
 			// Skip this entry and continue with the next one
-			NoticeWarning("invalid handshake server entry: %s", err)
+			NoticeWarningf("invalid handshake server entry: %s", err)
 			continue
 		}
 
@@ -409,7 +409,7 @@ func (serverContext *ServerContext) doHandshakeRequest(ignoreStatsRegexps bool) 
 				err := serverContext.tunnel.config.SetParameters(
 					tacticsRecord.Tag, true, tacticsRecord.Tactics.Parameters)
 				if err != nil {
-					NoticeWarning("apply handshake tactics failed: %s", err)
+					NoticeWarningf("apply handshake tactics failed: %s", err)
 				}
 				// The error will be due to invalid tactics values
 				// from the server. When SetParameters fails, all
@@ -655,7 +655,7 @@ func makeStatusRequestPayload(
 
 	persistentStats, err := TakeOutUnreportedPersistentStats(config)
 	if err != nil {
-		NoticeWarning(
+		NoticeWarningf(
 			"TakeOutUnreportedPersistentStats failed: %s", errors.Trace(err))
 		persistentStats = nil
 		// Proceed with transferStats only
@@ -711,7 +711,7 @@ func putBackStatusRequestPayload(payloadInfo *statusRequestPayloadInfo) {
 	if err != nil {
 		// These persistent stats records won't be resent until after a
 		// datastore re-initialization.
-		NoticeWarning(
+		NoticeWarningf(
 			"PutBackUnreportedPersistentStats failed: %s", errors.Trace(err))
 	}
 }
@@ -720,7 +720,7 @@ func confirmStatusRequestPayload(payloadInfo *statusRequestPayloadInfo) {
 	err := ClearReportedPersistentStats(payloadInfo.persistentStats)
 	if err != nil {
 		// These persistent stats records may be resent.
-		NoticeWarning(
+		NoticeWarningf(
 			"ClearReportedPersistentStats failed: %s", errors.Trace(err))
 	}
 }
@@ -1467,7 +1467,7 @@ func HandleServerRequest(
 	}
 
 	if err != nil {
-		NoticeWarning(
+		NoticeWarningf(
 			"HandleServerRequest for %s failed: %s", request.Type, errors.Trace(err))
 	}
 }
@@ -1490,7 +1490,7 @@ func HandleOSLRequest(
 	if oslRequest.ClearLocalSLOKs {
 		err := DeleteSLOKs()
 		if err != nil {
-			NoticeWarning("DeleteSLOKs failed: %v", errors.Trace(err))
+			NoticeWarningf("DeleteSLOKs failed: %v", errors.Trace(err))
 			// Continue
 		}
 	}
@@ -1501,7 +1501,7 @@ func HandleOSLRequest(
 		duplicate, err := SetSLOK(slok.ID, slok.Key)
 		if err != nil {
 			// TODO: return error to trigger retry?
-			NoticeWarning("SetSLOK failed: %v", errors.Trace(err))
+			NoticeWarningf("SetSLOK failed: %v", errors.Trace(err))
 		} else if !duplicate {
 			seededNewSLOK = true
 		}

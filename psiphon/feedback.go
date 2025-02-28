@@ -227,7 +227,7 @@ func SendFeedback(ctx context.Context, config *Config, diagnostics, uploadPath s
 			uploadURL.FrontingSpecs,
 			frontingUseDeviceBinder,
 			func(frontingProviderID string) {
-				NoticeInfo(
+				NoticeInfof(
 					"SendFeedback: selected fronting provider %s for %s",
 					frontingProviderID, uploadURL.URL)
 			})
@@ -264,7 +264,7 @@ func SendFeedback(ctx context.Context, config *Config, diagnostics, uploadPath s
 			if i+1 < feedbackUploadMaxAttempts {
 				// Log error, sleep and then retry
 				timeUntilRetry := prng.Period(feedbackUploadMinRetryDelay, feedbackUploadMaxRetryDelay)
-				NoticeWarning(
+				NoticeWarningf(
 					"feedback upload attempt %d/%d failed (retry in %.0fs): %s",
 					i+1, feedbackUploadMaxAttempts, timeUntilRetry.Seconds(), errors.Trace(err))
 				select {

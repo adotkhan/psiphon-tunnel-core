@@ -100,7 +100,7 @@ func newFrontedHTTPClientInstance(
 						bytes.Equal(dialParams.LastUsedFrontingSpecHash, hashFrontingSpec(spec))
 				})
 		if err != nil {
-			NoticeWarning("SelectCandidateWithNetworkReplayParameters failed: %v", errors.Trace(err))
+			NoticeWarningf("SelectCandidateWithNetworkReplayParameters failed: %v", errors.Trace(err))
 			// Continue without replay
 		}
 	}
@@ -276,7 +276,7 @@ func (f *frontedHTTPClientInstance) frontedHTTPClientRoundTripperSucceeded() {
 		err := SetNetworkReplayParameters[frontedHTTPDialParameters](
 			f.networkID, replayID, f.frontedHTTPDialParameters)
 		if err != nil {
-			NoticeWarning("SetNetworkReplayParameters failed: %v", errors.Trace(err))
+			NoticeWarningf("SetNetworkReplayParameters failed: %v", errors.Trace(err))
 			// Continue without persisting replay changes.
 		} else {
 			f.lastStoreReplay = now
@@ -311,7 +311,7 @@ func (f *frontedHTTPClientInstance) frontedHTTPClientRoundTripperFailed() {
 		err := DeleteNetworkReplayParameters[frontedHTTPDialParameters](
 			f.networkID, replayID)
 		if err != nil {
-			NoticeWarning("DeleteNetworkReplayParameters failed: %v", errors.Trace(err))
+			NoticeWarningf("DeleteNetworkReplayParameters failed: %v", errors.Trace(err))
 			// Continue without resetting replay.
 		}
 	}

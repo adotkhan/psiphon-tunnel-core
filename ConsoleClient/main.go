@@ -153,13 +153,13 @@ func main() {
 	configFileContents, err := ioutil.ReadFile(configFilename)
 	if err != nil {
 		psiphon.SetEmitDiagnosticNotices(true, false)
-		psiphon.NoticeError("error loading configuration file: %s", err)
+		psiphon.NoticeErrorf("error loading configuration file: %s", err)
 		os.Exit(1)
 	}
 	config, err := psiphon.LoadConfig(configFileContents)
 	if err != nil {
 		psiphon.SetEmitDiagnosticNotices(true, false)
-		psiphon.NoticeError("error processing configuration file: %s", err)
+		psiphon.NoticeErrorf("error processing configuration file: %s", err)
 		os.Exit(1)
 	}
 
@@ -188,7 +188,7 @@ func main() {
 			config, tunDevice, tunBindInterface, strings.Split(tunDNSServers, ","))
 		if err != nil {
 			psiphon.SetEmitDiagnosticNotices(true, false)
-			psiphon.NoticeError("error configuring packet tunnel: %s", err)
+			psiphon.NoticeErrorf("error configuring packet tunnel: %s", err)
 			os.Exit(1)
 		}
 		defer tunDeviceFile.Close()
@@ -199,7 +199,7 @@ func main() {
 	err = config.Commit(true)
 	if err != nil {
 		psiphon.SetEmitDiagnosticNotices(true, false)
-		psiphon.NoticeError("error loading configuration file: %s", err)
+		psiphon.NoticeErrorf("error loading configuration file: %s", err)
 		os.Exit(1)
 	}
 
@@ -227,7 +227,7 @@ func main() {
 
 	err = worker.Init(workCtx, config)
 	if err != nil {
-		psiphon.NoticeError("error in init: %s", err)
+		psiphon.NoticeErrorf("error in init: %s", err)
 		os.Exit(1)
 	}
 
@@ -238,7 +238,7 @@ func main() {
 
 		err := worker.Run(workCtx)
 		if err != nil {
-			psiphon.NoticeError("%s", err)
+			psiphon.NoticeErrorf("%s", err)
 			stopWork()
 			os.Exit(1)
 		}
@@ -342,7 +342,7 @@ func (w *TunnelWorker) Init(ctx context.Context, config *psiphon.Config) error {
 
 	err := psiphon.OpenDataStore(config)
 	if err != nil {
-		psiphon.NoticeError("error initializing datastore: %s", err)
+		psiphon.NoticeErrorf("error initializing datastore: %s", err)
 		os.Exit(1)
 	}
 
@@ -371,7 +371,7 @@ func (w *TunnelWorker) Init(ctx context.Context, config *psiphon.Config) error {
 				"")
 
 			if err != nil {
-				psiphon.NoticeError("error importing embedded server entry list: %s", err)
+				psiphon.NoticeErrorf("error importing embedded server entry list: %s", err)
 				return
 			}
 		}()
@@ -384,7 +384,7 @@ func (w *TunnelWorker) Init(ctx context.Context, config *psiphon.Config) error {
 
 	controller, err := psiphon.NewController(config)
 	if err != nil {
-		psiphon.NoticeError("error creating controller: %s", err)
+		psiphon.NoticeErrorf("error creating controller: %s", err)
 		return errors.Trace(err)
 	}
 	w.controller = controller

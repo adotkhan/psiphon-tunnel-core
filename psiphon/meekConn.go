@@ -564,7 +564,7 @@ func DialMeek(
 		meek.connManager = newMeekUnderlyingConnManager(preConn, tlsDialer, nil)
 
 		if IsTLSConnUsingHTTP2(preConn) {
-			NoticeInfo("negotiated HTTP/2 for %s", meekConfig.DiagnosticID)
+			NoticeInfof("negotiated HTTP/2 for %s", meekConfig.DiagnosticID)
 			transport = &http2.Transport{
 				DialTLSContext: func(
 					ctx context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
@@ -1276,7 +1276,7 @@ func (meek *MeekConn) relay() {
 				return
 			default:
 			}
-			NoticeWarning("%s", errors.Trace(err))
+			NoticeWarningf("%s", errors.Trace(err))
 			go meek.Close()
 			return
 		}
@@ -1556,7 +1556,7 @@ func (meek *MeekConn) relayRoundTrip(sendBuffer *bytes.Buffer) (int64, error) {
 				return 0, errors.Trace(err)
 			default:
 			}
-			NoticeWarning("meek round trip failed: %s", err)
+			NoticeWarningf("meek round trip failed: %s", err)
 			// ...continue to retry
 		}
 
@@ -1606,7 +1606,7 @@ func (meek *MeekConn) relayRoundTrip(sendBuffer *bytes.Buffer) (int64, error) {
 			receivedPayloadSize += readPayloadSize
 
 			if err != nil {
-				NoticeWarning("meek read payload failed: %s", err)
+				NoticeWarningf("meek read payload failed: %s", err)
 				// ...continue to retry
 			} else {
 				// Round trip completed successfully

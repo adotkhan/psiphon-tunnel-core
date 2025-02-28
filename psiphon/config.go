@@ -1497,7 +1497,7 @@ func (config *Config) Commit(migrateFromLegacyFields bool) error {
 	config.paramsMutex.Lock()
 	config.params, err = parameters.NewParameters(
 		func(err error) {
-			NoticeWarning("Parameters getValue failed: %s", err)
+			NoticeWarningf("Parameters getValue failed: %s", err)
 		})
 	config.paramsMutex.Unlock()
 	if err != nil {
@@ -1596,26 +1596,25 @@ func (config *Config) Commit(migrateFromLegacyFields bool) error {
 		for _, migration := range migrations {
 			err := DoFileMigration(migration)
 			if err != nil {
-				NoticeWarning("Config migration: %s", errors.Trace(err))
+				NoticeWarningf("Config migration: %s", errors.Trace(err))
 			} else {
 				successfulMigrations += 1
 			}
 		}
-		NoticeInfo(fmt.Sprintf(
-			"Config migration: %d/%d legacy files successfully migrated",
-			successfulMigrations, len(migrations)))
+		NoticeInfof("Config migration: %d/%d legacy files successfully migrated",
+			successfulMigrations, len(migrations))
 
 		// Remove OSL directory if empty
 		if config.MigrateObfuscatedServerListDownloadDirectory != "" {
 			files, err := ioutil.ReadDir(config.MigrateObfuscatedServerListDownloadDirectory)
 			if err != nil {
-				NoticeWarning(
+				NoticeWarningf(
 					"Error reading OSL directory: %s",
 					errors.Trace(common.RedactFilePathsError(err, config.MigrateObfuscatedServerListDownloadDirectory)))
 			} else if len(files) == 0 {
 				err := os.Remove(config.MigrateObfuscatedServerListDownloadDirectory)
 				if err != nil {
-					NoticeWarning(
+					NoticeWarningf(
 						"Error deleting empty OSL directory: %s",
 						errors.Trace(common.RedactFilePathsError(err, config.MigrateObfuscatedServerListDownloadDirectory)))
 				}
@@ -1624,7 +1623,7 @@ func (config *Config) Commit(migrateFromLegacyFields bool) error {
 
 		f, err := os.Create(migrationCompleteFilePath)
 		if err != nil {
-			NoticeWarning(
+			NoticeWarningf(
 				"Config migration: failed to create migration completed file with error %s",
 				errors.Trace(common.RedactFilePathsError(err, migrationCompleteFilePath)))
 		} else {
@@ -1699,10 +1698,10 @@ func (config *Config) SetParameters(tag string, skipOnError bool, applyParameter
 		return nil
 	}
 
-	NoticeInfo("applied %v parameters with tag '%s'", counts, tag)
+	NoticeInfof("applied %v parameters with tag '%s'", counts, tag)
 
 	// Emit certain individual parameter values for quick reference in diagnostics.
-	NoticeInfo(
+	NoticeInfof(
 		"NetworkLatencyMultiplier Min/Max/Lambda: %f/%f/%f",
 		p.Float(parameters.NetworkLatencyMultiplierMin),
 		p.Float(parameters.NetworkLatencyMultiplierMax),
@@ -1725,7 +1724,7 @@ func (config *Config) SetParameters(tag string, skipOnError bool, applyParameter
 	for _, receiver := range config.GetTacticsAppliedReceivers() {
 		err := receiver.TacticsApplied()
 		if err != nil {
-			NoticeError("TacticsApplied failed: %v", errors.Trace(err))
+			NoticeErrorf("TacticsApplied failed: %v", errors.Trace(err))
 			// Log and continue running.
 		}
 	}
@@ -3796,7 +3795,7 @@ func newCommonNetworkIDGetter() *commonNetworkIDGetter {
 func (n *commonNetworkIDGetter) GetNetworkID() string {
 	networkID, err := networkid.Get()
 	if err != nil {
-		NoticeError("networkid.Get failed: %v", errors.Trace(err))
+		NoticeErrorf("networkid.Get failed: %v", errors.Trace(err))
 		return unknownNetworkID
 	}
 	return networkID
@@ -3975,7 +3974,7 @@ func migrationsFromLegacyFilePaths(config *Config) ([]FileMigration, error) {
 
 		files, err := ioutil.ReadDir(config.MigrateObfuscatedServerListDownloadDirectory)
 		if err != nil {
-			NoticeWarning(
+			NoticeWarningf(
 				"Migration: failed to read OSL download directory with error %s",
 				common.RedactFilePathsError(err, config.MigrateObfuscatedServerListDownloadDirectory))
 		} else {
@@ -4012,7 +4011,7 @@ func migrationsFromLegacyFilePaths(config *Config) ([]FileMigration, error) {
 
 		files, err := ioutil.ReadDir(upgradeDownloadDir)
 		if err != nil {
-			NoticeWarning(
+			NoticeWarningf(
 				"Migration: failed to read upgrade download directory with error %s",
 				common.RedactFilePathsError(err, upgradeDownloadDir))
 		} else {

@@ -122,7 +122,7 @@ func FetchCommonRemoteServerList(
 	// ETag so we won't re-download this same data again.
 	err = SetUrlETag(canonicalURL, newETag)
 	if err != nil {
-		NoticeWarning("failed to set ETag for common remote server list: %s", errors.Trace(err))
+		NoticeWarningf("failed to set ETag for common remote server list: %s", errors.Trace(err))
 		// This fetch is still reported as a success, even if we can't store the etag
 	}
 
@@ -169,7 +169,7 @@ func FetchObfuscatedServerLists(
 	if os.IsNotExist(err) {
 		err := SetUrlETag(canonicalURL, "")
 		if err != nil {
-			NoticeWarning("SetUrlETag failed: %v", errors.Trace(err))
+			NoticeWarningf("SetUrlETag failed: %v", errors.Trace(err))
 			// Continue
 		}
 	}
@@ -202,7 +202,7 @@ func FetchObfuscatedServerLists(
 		downloadFilename)
 	if err != nil {
 		failed = true
-		NoticeWarning("failed to download obfuscated server list registry: %s", errors.Trace(err))
+		NoticeWarningf("failed to download obfuscated server list registry: %s", errors.Trace(err))
 		// Proceed with any existing cached OSL registry.
 	}
 
@@ -224,7 +224,7 @@ func FetchObfuscatedServerLists(
 		// Lookup SLOKs in local datastore
 		key, err := GetSLOK(slokID)
 		if err != nil && atomic.CompareAndSwapInt32(&emittedGetSLOKAlert, 0, 1) {
-			NoticeWarning("GetSLOK failed: %s", err)
+			NoticeWarningf("GetSLOK failed: %s", err)
 		}
 		return key
 	}
@@ -259,7 +259,7 @@ func FetchObfuscatedServerLists(
 		oslFileSpec, err := registryStreamer.Next()
 		if err != nil {
 			failed = true
-			NoticeWarning("failed to stream obfuscated server list registry: %s", errors.Trace(err))
+			NoticeWarningf("failed to stream obfuscated server list registry: %s", errors.Trace(err))
 			break
 		}
 
@@ -299,13 +299,13 @@ func FetchObfuscatedServerLists(
 
 		err := os.Rename(downloadFilename, cachedFilename)
 		if err != nil {
-			NoticeWarning("failed to set cached obfuscated server list registry: %s", errors.Trace(err))
+			NoticeWarningf("failed to set cached obfuscated server list registry: %s", errors.Trace(err))
 			// This fetch is still reported as a success, even if we can't update the cache
 		}
 
 		err = SetUrlETag(canonicalURL, newETag)
 		if err != nil {
-			NoticeWarning("failed to set ETag for obfuscated server list registry: %s", errors.Trace(err))
+			NoticeWarningf("failed to set ETag for obfuscated server list registry: %s", errors.Trace(err))
 			// This fetch is still reported as a success, even if we can't store the ETag
 		}
 	}
@@ -358,7 +358,7 @@ func downloadOSLFileSpec(
 		sourceETag,
 		downloadFilename)
 	if err != nil {
-		NoticeWarning("failed to download obfuscated server list file (%s): %s", hexID, errors.Trace(err))
+		NoticeWarningf("failed to download obfuscated server list file (%s): %s", hexID, errors.Trace(err))
 		return false
 	}
 
@@ -374,7 +374,7 @@ func downloadOSLFileSpec(
 
 	file, err := os.Open(downloadFilename)
 	if err != nil {
-		NoticeWarning("failed to open obfuscated server list file (%s): %s", hexID, errors.Trace(err))
+		NoticeWarningf("failed to open obfuscated server list file (%s): %s", hexID, errors.Trace(err))
 		return false
 	}
 	defer file.Close()
@@ -385,7 +385,7 @@ func downloadOSLFileSpec(
 		lookupSLOKs,
 		publicKey)
 	if err != nil {
-		NoticeWarning("failed to read obfuscated server list file (%s): %s", hexID, errors.Trace(err))
+		NoticeWarningf("failed to read obfuscated server list file (%s): %s", hexID, errors.Trace(err))
 		return false
 	}
 
@@ -401,7 +401,7 @@ func downloadOSLFileSpec(
 			protocol.SERVER_ENTRY_SOURCE_OBFUSCATED),
 		true)
 	if err != nil {
-		NoticeWarning("failed to store obfuscated server list file (%s): %s", hexID, errors.Trace(err))
+		NoticeWarningf("failed to store obfuscated server list file (%s): %s", hexID, errors.Trace(err))
 		return false
 	}
 
@@ -409,7 +409,7 @@ func downloadOSLFileSpec(
 	// ETag so we won't re-download this same data again.
 	err = SetUrlETag(canonicalURL, newETag)
 	if err != nil {
-		NoticeWarning("failed to set ETag for obfuscated server list file (%s): %s", hexID, errors.Trace(err))
+		NoticeWarningf("failed to set ETag for obfuscated server list file (%s): %s", hexID, errors.Trace(err))
 		// This fetch is still reported as a success, even if we can't store the ETag
 		return true
 	}
@@ -478,7 +478,7 @@ func downloadRemoteServerListFile(
 		frontingSpecs,
 		frontingUseDeviceBinder,
 		func(frontingProviderID string) {
-			NoticeInfo(
+			NoticeInfof(
 				"downloadRemoteServerListFile: selected fronting provider %s for %s",
 				frontingProviderID, sourceURL)
 		})

@@ -338,7 +338,7 @@ func (controller *Controller) Run(ctx context.Context) {
 			err = fmt.Errorf("no IPv4 address for interface %s", controller.config.ListenInterface)
 		}
 		if err != nil {
-			NoticeError("error getting listener IP: %v", errors.Trace(err))
+			NoticeErrorf("error getting listener IP: %v", errors.Trace(err))
 			return
 		}
 		listenIP = IPv4Address.String()
@@ -357,7 +357,7 @@ func (controller *Controller) Run(ctx context.Context) {
 		if !controller.config.DisableLocalSocksProxy {
 			socksProxy, err := NewSocksProxy(controller.config, controller, listenIP)
 			if err != nil {
-				NoticeError("error initializing local SOCKS proxy: %v", errors.Trace(err))
+				NoticeErrorf("error initializing local SOCKS proxy: %v", errors.Trace(err))
 				return
 			}
 			defer socksProxy.Close()
@@ -366,7 +366,7 @@ func (controller *Controller) Run(ctx context.Context) {
 		if !controller.config.DisableLocalHTTPProxy {
 			httpProxy, err := NewHttpProxy(controller.config, controller, listenIP)
 			if err != nil {
-				NoticeError("error initializing local HTTP proxy: %v", errors.Trace(err))
+				NoticeErrorf("error initializing local HTTP proxy: %v", errors.Trace(err))
 				return
 			}
 			defer httpProxy.Close()
@@ -468,14 +468,14 @@ func (controller *Controller) NetworkChanged() {
 	if controller.inproxyProxyBrokerClientManager != nil {
 		err := controller.inproxyProxyBrokerClientManager.NetworkChanged()
 		if err != nil {
-			NoticeError("NetworkChanged failed: %v", errors.Trace(err))
+			NoticeErrorf("NetworkChanged failed: %v", errors.Trace(err))
 			// Log and continue running.
 		}
 
 	}
 	err := controller.inproxyClientBrokerClientManager.NetworkChanged()
 	if err != nil {
-		NoticeError("NetworkChanged failed: %v", errors.Trace(err))
+		NoticeErrorf("NetworkChanged failed: %v", errors.Trace(err))
 		// Log and continue running.
 	}
 
@@ -507,7 +507,7 @@ func (controller *Controller) TerminateNextActiveTunnel() {
 	tunnel := controller.getNextActiveTunnel()
 	if tunnel != nil {
 		controller.SignalTunnelFailure(tunnel)
-		NoticeInfo("terminated tunnel: %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
+		NoticeInfof("terminated tunnel: %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
 	}
 }
 
@@ -609,7 +609,7 @@ fetcherLoop:
 				break retryLoop
 			}
 
-			NoticeWarning("failed to fetch %s remote server list: %v",
+			NoticeWarningf("failed to fetch %s remote server list: %v",
 				name, errors.Trace(err))
 
 			retryPeriod := controller.config.GetParameters().Get().Duration(
@@ -625,7 +625,7 @@ fetcherLoop:
 		}
 	}
 
-	NoticeInfo("exiting %s remote server list fetcher", name)
+	NoticeInfof("exiting %s remote server list fetcher", name)
 }
 
 // upgradeDownloader makes periodic attempts to complete a client upgrade
@@ -698,7 +698,7 @@ downloadLoop:
 				break retryLoop
 			}
 
-			NoticeWarning("failed to download upgrade: %v", errors.Trace(err))
+			NoticeWarningf("failed to download upgrade: %v", errors.Trace(err))
 
 			timeout := controller.config.GetParameters().Get().Duration(
 				parameters.FetchUpgradeRetryPeriod)
@@ -812,7 +812,7 @@ loop:
 
 		err := ScanServerEntries(callback)
 		if err != nil {
-			NoticeWarning("ScanServerEntries failed: %v", errors.Trace(err))
+			NoticeWarningf("ScanServerEntries failed: %v", errors.Trace(err))
 			continue
 		}
 
@@ -893,7 +893,7 @@ loop:
 			if err == nil {
 				reported = true
 			} else {
-				NoticeWarning("failed to make connected request: %v",
+				NoticeWarningf("failed to make connected request: %v",
 					errors.Trace(err))
 			}
 		}
@@ -1007,7 +1007,7 @@ loop:
 			}
 
 		case failedTunnel := <-controller.failedTunnels:
-			NoticeWarning("tunnel failed: %s", failedTunnel.dialParams.ServerEntry.GetDiagnosticID())
+			NoticeWarningf("tunnel failed: %s", failedTunnel.dialParams.ServerEntry.GetDiagnosticID())
 			controller.terminateTunnel(failedTunnel)
 
 			// Clear the reference to this tunnel before calling startEstablishing,
@@ -1062,7 +1062,7 @@ loop:
 				err := connectedTunnel.Activate(controller.runCtx, controller)
 
 				if err != nil {
-					NoticeWarning("failed to activate %s: %v",
+					NoticeWarningf("failed to activate %s: %v",
 						connectedTunnel.dialParams.ServerEntry.GetDiagnosticID(),
 						errors.Trace(err))
 					discardTunnel = true
@@ -1071,7 +1071,7 @@ loop:
 					// calls registerTunnel -- and after checking numTunnels; so failure is not
 					// expected.
 					if !controller.registerTunnel(connectedTunnel) {
-						NoticeWarning("failed to register %s: %v",
+						NoticeWarningf("failed to register %s: %v",
 							connectedTunnel.dialParams.ServerEntry.GetDiagnosticID(),
 							errors.Trace(err))
 						discardTunnel = true
@@ -1197,7 +1197,7 @@ func (controller *Controller) SignalTunnelFailure(tunnel *Tunnel) {
 
 // discardTunnel disposes of a successful connection that is no longer required.
 func (controller *Controller) discardTunnel(tunnel *Tunnel) {
-	NoticeInfo("discard tunnel: %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
+	NoticeInfof("discard tunnel: %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
 	// TODO: not calling PromoteServerEntry, since that would rank the
 	// discarded tunnel before fully active tunnels. Can a discarded tunnel
 	// be promoted (since it connects), but with lower rank than all active
@@ -1220,7 +1220,7 @@ func (controller *Controller) registerTunnel(tunnel *Tunnel) bool {
 		if activeTunnel.dialParams.ServerEntry.IpAddress ==
 			tunnel.dialParams.ServerEntry.IpAddress {
 
-			NoticeWarning("duplicate tunnel: %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
+			NoticeWarningf("duplicate tunnel: %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
 			return false
 		}
 	}
@@ -1235,7 +1235,7 @@ func (controller *Controller) registerTunnel(tunnel *Tunnel) bool {
 	if controller.config.TargetServerEntry == "" {
 		err := PromoteServerEntry(controller.config, tunnel.dialParams.ServerEntry.IpAddress)
 		if err != nil {
-			NoticeWarning("PromoteServerEntry failed: %v", errors.Trace(err))
+			NoticeWarningf("PromoteServerEntry failed: %v", errors.Trace(err))
 			// Proceed with using tunnel
 		}
 	}
@@ -1702,7 +1702,7 @@ func (p *protocolSelectionConstraints) selectProtocol(
 		}
 		delay := r.Delay()
 		if delay > 0 {
-			NoticeInfo("in-proxy protocol selection rate limited: %v", delay)
+			NoticeInfof("in-proxy protocol selection rate limited: %v", delay)
 		}
 		return selectedProtocol, delay, true
 
@@ -2148,10 +2148,10 @@ func (controller *Controller) doConstraintsScan() {
 	startTime := time.Now()
 	scanErr := ScanServerEntries(callback)
 	if scanErr != nil && !scanCancelled {
-		NoticeWarning("ScanServerEntries failed: %v", errors.Trace(scanErr))
+		NoticeWarningf("ScanServerEntries failed: %v", errors.Trace(scanErr))
 		// Continue and make adjustments based on any partial results.
 	}
-	NoticeInfo("Awaited ScanServerEntries: scanned %d entries in %v", scanCount, time.Since(startTime))
+	NoticeInfof("Awaited ScanServerEntries: scanned %d entries in %v", scanCount, time.Since(startTime))
 
 	// Make adjustments based on candidate counts.
 
@@ -2224,8 +2224,8 @@ func (controller *Controller) stopEstablishing() {
 	controller.peakConcurrentEstablishTunnels = 0
 	controller.peakConcurrentIntensiveEstablishTunnels = 0
 	controller.concurrentEstablishTunnelsMutex.Unlock()
-	NoticeInfo("peak concurrent establish tunnels: %d", peakConcurrent)
-	NoticeInfo("peak concurrent resource intensive establish tunnels: %d", peakConcurrentIntensive)
+	NoticeInfof("peak concurrent establish tunnels: %d", peakConcurrent)
+	NoticeInfof("peak concurrent resource intensive establish tunnels: %d", peakConcurrentIntensive)
 
 	emitMemoryMetrics()
 	DoGarbageCollection()
@@ -2253,7 +2253,7 @@ func (controller *Controller) establishCandidateGenerator() {
 
 	applyServerAffinity, iterator, err := NewServerEntryIterator(controller.config)
 	if err != nil {
-		NoticeError("failed to iterate over candidates: %v", errors.Trace(err))
+		NoticeErrorf("failed to iterate over candidates: %v", errors.Trace(err))
 		controller.SignalComponentFailure()
 		return
 	}
@@ -2319,7 +2319,7 @@ loop:
 
 			serverEntry, err := iterator.Next()
 			if err != nil {
-				NoticeError("failed to get next candidate: %v", errors.Trace(err))
+				NoticeErrorf("failed to get next candidate: %v", errors.Trace(err))
 				controller.SignalComponentFailure()
 				return
 			}
@@ -2482,7 +2482,7 @@ loop:
 
 		err := iterator.Reset()
 		if err != nil {
-			NoticeError("failed to reset iterator: %v", errors.Trace(err))
+			NoticeErrorf("failed to reset iterator: %v", errors.Trace(err))
 			controller.SignalComponentFailure()
 			return
 		}
@@ -2684,7 +2684,7 @@ loop:
 			// logging. Silently fail the candidate in this case. Otherwise,
 			// emit error.
 			if err != nil {
-				NoticeInfo("failed to make dial parameters for %s: %v",
+				NoticeInfof("failed to make dial parameters for %s: %v",
 					candidateServerEntry.serverEntry.GetDiagnosticID(),
 					errors.Trace(err))
 			}
@@ -2802,7 +2802,7 @@ loop:
 				break loop
 			}
 
-			NoticeInfo("failed to connect to %s: %v",
+			NoticeInfof("failed to connect to %s: %v",
 				candidateServerEntry.serverEntry.GetDiagnosticID(),
 				errors.Trace(err))
 
@@ -3014,7 +3014,7 @@ func (controller *Controller) runInproxyProxy() {
 
 	proxy, err := inproxy.NewProxy(config)
 	if err != nil {
-		NoticeError("inproxy.NewProxy failed: %v", errors.Trace(err))
+		NoticeErrorf("inproxy.NewProxy failed: %v", errors.Trace(err))
 		controller.SignalComponentFailure()
 		return
 	}
@@ -3262,7 +3262,7 @@ func (controller *Controller) inproxyHandleProxyTacticsPayload(
 	var payload *tactics.Payload
 	err := json.Unmarshal(tacticsPayload, &payload)
 	if err != nil {
-		NoticeError("unmarshal tactics payload failed: %v", errors.Trace(err))
+		NoticeErrorf("unmarshal tactics payload failed: %v", errors.Trace(err))
 		return false
 	}
 
@@ -3304,7 +3304,7 @@ func (controller *Controller) inproxyHandleProxyTacticsPayload(
 	tacticsRecord, err := tactics.HandleTacticsPayload(
 		GetTacticsStorer(controller.config), networkID, payload)
 	if err != nil {
-		NoticeError("HandleTacticsPayload failed: %v", errors.Trace(err))
+		NoticeErrorf("HandleTacticsPayload failed: %v", errors.Trace(err))
 		return false
 	}
 
@@ -3316,7 +3316,7 @@ func (controller *Controller) inproxyHandleProxyTacticsPayload(
 		err := controller.config.SetParameters(
 			tacticsRecord.Tag, true, tacticsRecord.Tactics.Parameters)
 		if err != nil {
-			NoticeInfo("apply inproxy broker tactics failed: %s", err)
+			NoticeInfof("apply inproxy broker tactics failed: %s", err)
 			return false
 		}
 	} else {

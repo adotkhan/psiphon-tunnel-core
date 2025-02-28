@@ -100,7 +100,7 @@ func DownloadUpgrade(
 		downloadURL.FrontingSpecs,
 		frontingUseDeviceBinder,
 		func(frontingProviderID string) {
-			NoticeInfo(
+			NoticeInfof(
 				"DownloadUpgrade: selected fronting provider %s for %s",
 				frontingProviderID, downloadURL.URL)
 		})
@@ -148,7 +148,7 @@ func DownloadUpgrade(
 			// return an error so that we don't go into a rapid retry loop making
 			// ineffective HEAD requests (the client may still signal an upgrade
 			// download later in the session).
-			NoticeWarning(
+			NoticeWarningf(
 				"failed to download upgrade: invalid %s header value %s: %s",
 				clientVersionHeader, availableClientVersion, err)
 			return nil

@@ -260,7 +260,7 @@ func MakeDialParameters(
 	dialParams, err := GetDialParameters(
 		config, serverEntry.IpAddress, networkID)
 	if err != nil {
-		NoticeWarning("GetDialParameters failed: %s", err)
+		NoticeWarningf("GetDialParameters failed: %s", err)
 		dialParams = nil
 		// Proceed, without existing dial parameters.
 	}
@@ -345,7 +345,7 @@ func MakeDialParameters(
 
 		err = DeleteDialParameters(serverEntry.IpAddress, networkID)
 		if err != nil {
-			NoticeWarning("DeleteDialParameters failed: %s", err)
+			NoticeWarningf("DeleteDialParameters failed: %s", err)
 		}
 		dialParams = nil
 	}
@@ -1796,10 +1796,10 @@ func (dialParams *DialParameters) Succeeded() {
 		return
 	}
 
-	NoticeInfo("Set dial parameters for %s", dialParams.ServerEntry.GetDiagnosticID())
+	NoticeInfof("Set dial parameters for %s", dialParams.ServerEntry.GetDiagnosticID())
 	err := SetDialParameters(dialParams.ServerEntry.IpAddress, dialParams.NetworkID, dialParams)
 	if err != nil {
-		NoticeWarning("SetDialParameters failed: %s", err)
+		NoticeWarningf("SetDialParameters failed: %s", err)
 	}
 }
 
@@ -1821,10 +1821,10 @@ func (dialParams *DialParameters) Failed(config *Config) {
 		!config.GetParameters().Get().WeightedCoinFlip(
 			parameters.ReplayRetainFailedProbability) {
 
-		NoticeInfo("Delete dial parameters for %s", dialParams.ServerEntry.GetDiagnosticID())
+		NoticeInfof("Delete dial parameters for %s", dialParams.ServerEntry.GetDiagnosticID())
 		err := DeleteDialParameters(dialParams.ServerEntry.IpAddress, dialParams.NetworkID)
 		if err != nil {
-			NoticeWarning("DeleteDialParameters failed: %s", err)
+			NoticeWarningf("DeleteDialParameters failed: %s", err)
 		}
 	}
 
@@ -2202,7 +2202,7 @@ func selectHostName(
 	choice := prng.Intn(len(regexStrings))
 	hostName, err := regen.GenerateString(regexStrings[choice])
 	if err != nil {
-		NoticeWarning("selectHostName: regen.Generate failed: %v", errors.Trace(err))
+		NoticeWarningf("selectHostName: regen.Generate failed: %v", errors.Trace(err))
 		return values.GetHostName()
 	}
 

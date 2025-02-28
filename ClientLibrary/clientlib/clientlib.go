@@ -306,7 +306,7 @@ func StartTunnel(
 			"",
 			embeddedServerEntryList)
 		if err != nil {
-			psiphon.NoticeError("error importing embedded server entry list: %s", err)
+			psiphon.NoticeErrorf("error importing embedded server entry list: %s", err)
 			return
 		}
 	}()

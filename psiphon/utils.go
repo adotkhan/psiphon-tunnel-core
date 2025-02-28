@@ -179,7 +179,7 @@ func (conn *channelConn) SetWriteDeadline(_ time.Time) error {
 func emitMemoryMetrics() {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
-	NoticeInfo("Memory metrics at %s: goroutines %d | objects %d | alloc %s | inuse %s | sys %s | cumulative %d %s",
+	NoticeInfof("Memory metrics at %s: goroutines %d | objects %d | alloc %s | inuse %s | sys %s | cumulative %d %s",
 		stacktrace.GetParentFunctionName(),
 		runtime.NumGoroutine(),
 		memStats.HeapObjects,
@@ -191,11 +191,11 @@ func emitMemoryMetrics() {
 }
 
 func emitDatastoreMetrics() {
-	NoticeInfo("Datastore metrics at %s: %s", stacktrace.GetParentFunctionName(), GetDataStoreMetrics())
+	NoticeInfof("Datastore metrics at %s: %s", stacktrace.GetParentFunctionName(), GetDataStoreMetrics())
 }
 
 func emitDNSMetrics(resolver *resolver.Resolver) {
-	NoticeInfo("DNS metrics at %s: %s", stacktrace.GetParentFunctionName(), resolver.GetMetrics())
+	NoticeInfof("DNS metrics at %s: %s", stacktrace.GetParentFunctionName(), resolver.GetMetrics())
 }
 
 func DoGarbageCollection() {

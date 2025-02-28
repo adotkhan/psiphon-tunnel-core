@@ -349,7 +349,7 @@ func NewResolver(config *Config, useBindToDevice bool) *resolver.Resolver {
 	p := config.GetParameters().Get()
 
 	networkConfig := &resolver.NetworkConfig{
-		LogWarning:                func(err error) { NoticeWarning("ResolveIP: %v", err) },
+		LogWarning:                func(err error) { NoticeWarningf("ResolveIP: %v", err) },
 		LogHostnames:              config.EmitDiagnosticNetworkParameters,
 		CacheExtensionInitialTTL:  p.Duration(parameters.DNSResolverCacheExtensionInitialTTL),
 		CacheExtensionVerifiedTTL: p.Duration(parameters.DNSResolverCacheExtensionVerifiedTTL),
@@ -736,12 +736,12 @@ func ResumeDownload(
 
 			tempErr := os.Remove(partialFilename)
 			if tempErr != nil && !os.IsNotExist(tempErr) {
-				NoticeWarning("reset partial download failed: %s", tempErr)
+				NoticeWarningf("reset partial download failed: %s", tempErr)
 			}
 
 			tempErr = os.Remove(partialETagFilename)
 			if tempErr != nil && !os.IsNotExist(tempErr) {
-				NoticeWarning("reset partial download ETag failed: %s", tempErr)
+				NoticeWarningf("reset partial download ETag failed: %s", tempErr)
 			}
 
 			return 0, "", errors.Tracef(

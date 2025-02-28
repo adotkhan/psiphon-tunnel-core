@@ -81,7 +81,7 @@ func datastoreOpenDB(
 			break
 		}
 
-		NoticeWarning("tryDatastoreOpenDB failed: %s", err)
+		NoticeWarningf("tryDatastoreOpenDB failed: %s", err)
 
 		// The datastore file may be corrupt, so, in subsequent iterations,
 		// set the "reset" flag and attempt to delete the file and try again.
@@ -196,7 +196,7 @@ func tryDatastoreOpenDB(
 			if tx.Bucket(obsoleteBucket) != nil {
 				err := tx.DeleteBucket(obsoleteBucket)
 				if err != nil {
-					NoticeWarning("DeleteBucket %s error: %s", obsoleteBucket, err)
+					NoticeWarningf("DeleteBucket %s error: %s", obsoleteBucket, err)
 					// Continue, since this is not fatal
 				}
 			}
@@ -221,7 +221,7 @@ func (db *datastoreDB) isDatastoreFailed() bool {
 
 func (db *datastoreDB) setDatastoreFailed(r interface{}) {
 	atomic.StoreInt32(&db.isFailed, 1)
-	NoticeWarning("Datastore failed: %s", errors.Tracef("panic: %v", r))
+	NoticeWarningf("Datastore failed: %s", errors.Tracef("panic: %v", r))
 }
 
 func (db *datastoreDB) close() error {

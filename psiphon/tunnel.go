@@ -206,7 +206,7 @@ func (tunnel *Tunnel) Activate(
 	// fails.
 	var serverContext *ServerContext
 	if !tunnel.config.DisableApi {
-		NoticeInfo(
+		NoticeInfof(
 			"starting server context for %s",
 			tunnel.dialParams.ServerEntry.GetDiagnosticID())
 
@@ -265,14 +265,14 @@ func (tunnel *Tunnel) Activate(
 							if serverRequest.Type == protocol.PSIPHON_API_INPROXY_RELAY_REQUEST_NAME {
 
 								if notice {
-									NoticeInfo(
+									NoticeInfof(
 										"relaying inproxy broker packets for %s",
 										tunnel.dialParams.ServerEntry.GetDiagnosticID())
 									notice = false
 								}
 								err := tunnel.relayInproxyPacketRoundTrip(handshakeCtx, serverRequest)
 								if err != nil {
-									NoticeWarning(
+									NoticeWarningf(
 										"relay inproxy broker packets failed: %v",
 										errors.Trace(err))
 									// Continue
@@ -456,7 +456,7 @@ func (tunnel *Tunnel) Close(isDiscarded bool) {
 
 		err := tunnel.sshClient.Wait()
 		if err != nil {
-			NoticeWarning("close tunnel ssh error: %s", err)
+			NoticeWarningf("close tunnel ssh error: %s", err)
 		}
 	}
 
@@ -1774,7 +1774,7 @@ func (tunnel *Tunnel) operateTunnel(tunnelOwner TunnelOwner) {
 	// persistent stats.
 	unreported := CountUnreportedPersistentStats()
 	if unreported > 0 {
-		NoticeInfo("Unreported persistent stats: %d", unreported)
+		NoticeInfof("Unreported persistent stats: %d", unreported)
 		p := tunnel.getCustomParameters()
 		statsTimer.Reset(
 			prng.Period(
@@ -1930,7 +1930,7 @@ func (tunnel *Tunnel) operateTunnel(tunnelOwner TunnelOwner) {
 		case <-tunnel.signalPortForwardFailure:
 			// Note: no mutex on portForwardFailureTotal; only referenced here
 			tunnel.totalPortForwardFailures++
-			NoticeInfo("port forward failures for %s: %d",
+			NoticeInfof("port forward failures for %s: %d",
 				tunnel.dialParams.ServerEntry.GetDiagnosticID(),
 				tunnel.totalPortForwardFailures)
 
@@ -2013,7 +2013,7 @@ func (tunnel *Tunnel) operateTunnel(tunnelOwner TunnelOwner) {
 
 	} else {
 
-		NoticeWarning("operate tunnel error for %s: %s",
+		NoticeWarningf("operate tunnel error for %s: %s",
 			tunnel.dialParams.ServerEntry.GetDiagnosticID(), err)
 
 		tunnelOwner.SignalTunnelFailure(tunnel)
@@ -2081,7 +2081,7 @@ func (tunnel *Tunnel) sendSshKeepAlive(
 		success := (err == nil && requestOk)
 
 		if success && isProbeKeepAlive {
-			NoticeInfo("Probe SSH keep-alive RTT: %s", elapsedTime)
+			NoticeInfof("Probe SSH keep-alive RTT: %s", elapsedTime)
 		}
 
 		// Record the keep alive round trip as a speed test sample. The first
@@ -2103,7 +2103,7 @@ func (tunnel *Tunnel) sendSshKeepAlive(
 				request,
 				response)
 			if err != nil {
-				NoticeWarning("AddSpeedTestSample failed: %s", errors.Trace(err))
+				NoticeWarningf("AddSpeedTestSample failed: %s", errors.Trace(err))
 			}
 		}
 	}()
@@ -2190,15 +2190,15 @@ loop:
 			// and dial parameters.
 
 			if resetOnFailure {
-				NoticeInfo("Delete dial parameters for %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
+				NoticeInfof("Delete dial parameters for %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
 				err := DeleteDialParameters(tunnel.dialParams.ServerEntry.IpAddress, tunnel.dialParams.NetworkID)
 				if err != nil {
-					NoticeWarning("DeleteDialParameters failed: %s", err)
+					NoticeWarningf("DeleteDialParameters failed: %s", err)
 				}
-				NoticeInfo("Delete server affinity for %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
+				NoticeInfof("Delete server affinity for %s", tunnel.dialParams.ServerEntry.GetDiagnosticID())
 				err = DeleteServerEntryAffinity(tunnel.dialParams.ServerEntry.IpAddress)
 				if err != nil {
-					NoticeWarning("DeleteServerEntryAffinity failed: %s", err)
+					NoticeWarningf("DeleteServerEntryAffinity failed: %s", err)
 				}
 			}
 		}
@@ -2222,7 +2222,7 @@ func sendStats(tunnel *Tunnel) bool {
 
 	err := tunnel.serverContext.DoStatusRequest(tunnel)
 	if err != nil {
-		NoticeWarning("DoStatusRequest failed for %s: %s",
+		NoticeWarningf("DoStatusRequest failed for %s: %s",
 			tunnel.dialParams.ServerEntry.GetDiagnosticID(), err)
 	}
 

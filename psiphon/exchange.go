@@ -86,19 +86,19 @@ func ExportExchangePayload(config *Config) string {
 	// the receiving outer client needs to be aware of and configure personal
 	// pairing mode, but the payload is currently opaque to the outer client.
 	if config.DisableTunnels {
-		NoticeWarning(
+		NoticeWarningf(
 			"ExportExchangePayload skipped due to DisableTunnels")
 		return ""
 	}
 	if config.networkIDGetter.config.IsInproxyClientPersonalPairingMode() {
-		NoticeWarning(
+		NoticeWarningf(
 			"ExportExchangePayload skipped due to IsInproxyClientPersonalPairingMode")
 		return ""
 	}
 
 	payload, err := exportExchangePayload(config)
 	if err != nil {
-		NoticeWarning("ExportExchangePayload failed: %s", errors.Trace(err))
+		NoticeWarningf("ExportExchangePayload failed: %s", errors.Trace(err))
 		return ""
 	}
 	return payload
@@ -121,7 +121,7 @@ func ExportExchangePayload(config *Config) string {
 func ImportExchangePayload(config *Config, encodedPayload string) bool {
 	err := importExchangePayload(config, encodedPayload)
 	if err != nil {
-		NoticeWarning("ImportExchangePayload failed: %s", errors.Trace(err))
+		NoticeWarningf("ImportExchangePayload failed: %s", errors.Trace(err))
 		return false
 	}
 	return true

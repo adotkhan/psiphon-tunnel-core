@@ -474,7 +474,7 @@ func NewInproxyBrokerClientInstance(
 						bytes.Equal(dialParams.LastUsedBrokerSpecHash, hashBrokerSpec(spec))
 				})
 		if err != nil {
-			NoticeWarning("SelectCandidateWithNetworkReplayParameters failed: %v", errors.Trace(err))
+			NoticeWarningf("SelectCandidateWithNetworkReplayParameters failed: %v", errors.Trace(err))
 			// Continue without replay
 		}
 	}
@@ -617,7 +617,7 @@ func NewInproxyBrokerClientInstance(
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	NoticeInfo("inproxy: selected broker %s", inproxy.ID(brokerID))
+	NoticeInfof("inproxy: selected broker %s", inproxy.ID(brokerID))
 
 	return b, nil
 }
@@ -752,7 +752,7 @@ func prepareInproxyCompartmentIDs(
 
 		knownCommonCompartmentIDs, err := LoadInproxyCommonCompartmentIDs()
 		if err != nil {
-			NoticeWarning("LoadInproxyCommonCompartmentIDs failed: %v", errors.Trace(err))
+			NoticeWarningf("LoadInproxyCommonCompartmentIDs failed: %v", errors.Trace(err))
 			// Continue with only the tactics common compartment IDs.
 		}
 
@@ -785,7 +785,7 @@ func prepareInproxyCompartmentIDs(
 
 			err := StoreInproxyCommonCompartmentIDs(newCompartmentIDs)
 			if err != nil {
-				NoticeWarning("StoreInproxyCommonCompartmentIDs failed: %v", errors.Trace(err))
+				NoticeWarningf("StoreInproxyCommonCompartmentIDs failed: %v", errors.Trace(err))
 				// Continue without persisting new common compartment IDs.
 			}
 
@@ -905,7 +905,7 @@ func (b *InproxyBrokerClientInstance) BrokerClientRoundTripperSucceeded(roundTri
 		err := SetNetworkReplayParameters[InproxyBrokerDialParameters](
 			b.networkID, b.brokerDialParams.brokerSpec.BrokerPublicKey, b.brokerDialParams)
 		if err != nil {
-			NoticeWarning("StoreBrokerDialParameters failed: %v", errors.Trace(err))
+			NoticeWarningf("StoreBrokerDialParameters failed: %v", errors.Trace(err))
 			// Continue without persisting replay changes.
 		} else {
 			b.lastStoreReplay = now
@@ -1001,7 +1001,7 @@ func (b *InproxyBrokerClientInstance) BrokerClientRoundTripperFailed(roundTrippe
 		err := DeleteNetworkReplayParameters[InproxyBrokerDialParameters](
 			b.networkID, b.brokerDialParams.brokerSpec.BrokerPublicKey)
 		if err != nil {
-			NoticeWarning("DeleteBrokerDialParameters failed: %v", errors.Trace(err))
+			NoticeWarningf("DeleteBrokerDialParameters failed: %v", errors.Trace(err))
 			// Continue without resetting replay.
 		}
 	}
@@ -1020,7 +1020,7 @@ func (b *InproxyBrokerClientInstance) BrokerClientRoundTripperFailed(roundTrippe
 
 	err := b.brokerClientManager.resetBrokerClientOnRoundTripperFailed(b)
 	if err != nil {
-		NoticeWarning("reset broker client failed: %v", errors.Trace(err))
+		NoticeWarningf("reset broker client failed: %v", errors.Trace(err))
 		// Continue with old broker client instance.
 	}
 }
@@ -1041,7 +1041,7 @@ func (b *InproxyBrokerClientInstance) BrokerClientNoMatch(roundTripper inproxy.R
 
 	err := b.brokerClientManager.resetBrokerClientOnNoMatch(b)
 	if err != nil {
-		NoticeWarning("reset broker client failed: %v", errors.Trace(err))
+		NoticeWarningf("reset broker client failed: %v", errors.Trace(err))
 		// Continue with old broker client instance.
 	}
 }
@@ -1353,7 +1353,7 @@ func (rt *InproxyBrokerRoundTripper) RoundTrip(
 		// Log any error which results in invoking BrokerClientRoundTripperFailed.
 		var failedError *inproxy.RoundTripperFailedError
 		if std_errors.As(retErr, &failedError) {
-			NoticeWarning("RoundTripperFailedError: %v", retErr)
+			NoticeWarningf("RoundTripperFailedError: %v", retErr)
 		}
 	}()
 

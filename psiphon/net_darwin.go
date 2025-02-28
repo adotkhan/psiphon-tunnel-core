@@ -40,7 +40,7 @@ func setAdditionalSocketOptions(socketFd int) {
 	// TODO: return error
 	err := syscall.SetsockoptInt(socketFd, syscall.SOL_SOCKET, syscall.SO_NOSIGPIPE, 1)
 	if err != nil {
-		NoticeError("SetsockoptInt failed: %v", errors.Trace(err))
+		NoticeErrorf("SetsockoptInt failed: %v", errors.Trace(err))
 	}
 }
 

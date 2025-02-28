@@ -169,7 +169,7 @@ func CloseDataStore() {
 	defer datastoreReferenceCountMutex.Unlock()
 
 	if datastoreReferenceCount <= 0 {
-		NoticeWarning(
+		NoticeWarningf(
 			"invalid datastore reference count: %d", datastoreReferenceCount)
 		return
 	}
@@ -189,7 +189,7 @@ func CloseDataStore() {
 
 	err := activeDatastoreDB.close()
 	if err != nil {
-		NoticeWarning("failed to close datastore: %s", errors.Trace(err))
+		NoticeWarningf("failed to close datastore: %s", errors.Trace(err))
 	}
 
 	activeDatastoreDB = nil
@@ -351,7 +351,7 @@ func StoreServerEntry(serverEntryFields protocol.ServerEntryFields, replaceIfExi
 			return errors.Trace(err)
 		}
 
-		NoticeInfo("updated server %s", serverEntryFields.GetDiagnosticID())
+		NoticeInfof("updated server %s", serverEntryFields.GetDiagnosticID())
 
 		return nil
 	})
@@ -482,7 +482,7 @@ func PromoteServerEntry(config *Config, ipAddress string) error {
 		bucket := tx.bucket(datastoreServerEntriesBucket)
 		data := bucket.get(serverEntryID)
 		if data == nil {
-			NoticeWarning(
+			NoticeWarningf(
 				"PromoteServerEntry: ignoring unknown server entry: %s",
 				ipAddress)
 			return nil
@@ -714,7 +714,7 @@ func newTargetServerEntryIterator(config *Config, isTactics bool) (bool, *Server
 		targetServerEntry:            serverEntry,
 	}
 
-	NoticeInfo("using TargetServerEntry: %s", serverEntry.GetDiagnosticID())
+	NoticeInfof("using TargetServerEntry: %s", serverEntry.GetDiagnosticID())
 
 	return false, iterator, nil
 }
@@ -931,7 +931,7 @@ func (iterator *ServerEntryIterator) Next() (*protocol.ServerEntry, error) {
 				err = json.Unmarshal(value, &serverEntryFields)
 				if err != nil {
 					doDeleteServerEntry = true
-					NoticeWarning(
+					NoticeWarningf(
 						"ServerEntryIterator.Next: unmarshal failed: %s",
 						errors.Trace(err))
 
@@ -944,7 +944,7 @@ func (iterator *ServerEntryIterator) Next() (*protocol.ServerEntry, error) {
 						iterator.config.ServerEntrySignaturePublicKey)
 					if err != nil {
 						doDeleteServerEntry = true
-						NoticeWarning(
+						NoticeWarningf(
 							"ServerEntryIterator.Next: verify signature failed: %s",
 							errors.Trace(err))
 
@@ -960,7 +960,7 @@ func (iterator *ServerEntryIterator) Next() (*protocol.ServerEntry, error) {
 			if err != nil {
 				serverEntry = nil
 				doDeleteServerEntry = true
-				NoticeWarning(
+				NoticeWarningf(
 					"ServerEntryIterator.Next: unmarshal failed: %s",
 					errors.Trace(err))
 
@@ -976,7 +976,7 @@ func (iterator *ServerEntryIterator) Next() (*protocol.ServerEntry, error) {
 
 		if doDeleteServerEntry {
 			err := deleteServerEntry(iterator.config, serverEntryID)
-			NoticeWarning(
+			NoticeWarningf(
 				"ServerEntryIterator.Next: deleteServerEntry failed: %s",
 				errors.Trace(err))
 			continue
@@ -1057,7 +1057,7 @@ func (iterator *ServerEntryIterator) Next() (*protocol.ServerEntry, error) {
 
 			if err != nil {
 				// Do not stop.
-				NoticeWarning(
+				NoticeWarningf(
 					"ServerEntryIterator.Next: update server entry failed: %s",
 					errors.Trace(err))
 			}
@@ -1107,7 +1107,7 @@ func MakeCompatibleServerEntry(serverEntry *protocol.ServerEntry) *protocol.Serv
 func PruneServerEntry(config *Config, serverEntryTag string) {
 	err := pruneServerEntry(config, serverEntryTag)
 	if err != nil {
-		NoticeWarning(
+		NoticeWarningf(
 			"PruneServerEntry failed: %s: %s",
 			serverEntryTag, errors.Trace(err))
 		return
@@ -1212,7 +1212,7 @@ func DeleteServerEntry(config *Config, ipAddress string) {
 
 	err := deleteServerEntry(config, serverEntryID)
 	if err != nil {
-		NoticeWarning("DeleteServerEntry failed: %s", errors.Trace(err))
+		NoticeWarningf("DeleteServerEntry failed: %s", errors.Trace(err))
 		return
 	}
 	NoticeInfo("Server entry deleted")
@@ -1338,7 +1338,7 @@ func ScanServerEntries(callback func(*protocol.ServerEntry) bool) error {
 			if err != nil {
 				// In case of data corruption or a bug causing this condition,
 				// do not stop iterating.
-				NoticeWarning("ScanServerEntries: %s", errors.Trace(err))
+				NoticeWarningf("ScanServerEntries: %s", errors.Trace(err))
 				continue
 			}
 
@@ -1381,7 +1381,7 @@ func HasServerEntries() bool {
 	})
 
 	if err != nil {
-		NoticeWarning("HasServerEntries failed: %s", errors.Trace(err))
+		NoticeWarningf("HasServerEntries failed: %s", errors.Trace(err))
 		return false
 	}
 
@@ -1405,7 +1405,7 @@ func CountServerEntries() int {
 	})
 
 	if err != nil {
-		NoticeWarning("CountServerEntries failed: %s", err)
+		NoticeWarningf("CountServerEntries failed: %s", err)
 		return 0
 	}
 
@@ -1580,7 +1580,7 @@ func CountUnreportedPersistentStats() int {
 	})
 
 	if err != nil {
-		NoticeWarning("CountUnreportedPersistentStats failed: %s", err)
+		NoticeWarningf("CountUnreportedPersistentStats failed: %s", err)
 		return 0
 	}
 
@@ -1615,7 +1615,7 @@ func TakeOutUnreportedPersistentStats(config *Config) (map[string][][]byte, erro
 				var jsonData interface{}
 				err := json.Unmarshal(key, &jsonData)
 				if err != nil {
-					NoticeWarning(
+					NoticeWarningf(
 						"Invalid key in TakeOutUnreportedPersistentStats: %s: %s",
 						string(key), err)
 					_ = bucket.delete(key)
@@ -1769,7 +1769,7 @@ func CountSLOKs() int {
 	})
 
 	if err != nil {
-		NoticeWarning("CountSLOKs failed: %s", err)
+		NoticeWarningf("CountSLOKs failed: %s", err)
 		return 0
 	}
 
@@ -2245,7 +2245,7 @@ func SelectCandidateWithNetworkReplayParameters[C, R any](
 				// Note that the deletes performed here won't prune records
 				// for old candidates which are no longer passed in to
 				// SelectCandidateWithNetworkReplayParameters.
-				NoticeWarning(
+				NoticeWarningf(
 					"SelectCandidateWithNetworkReplayParameters: unmarshal failed: %s",
 					errors.Trace(err))
 				_ = bucket.delete(key)
