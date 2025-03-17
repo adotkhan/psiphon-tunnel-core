@@ -2428,13 +2428,12 @@ func (conn *webRTCConn) addRTPReliabilityLayer(ctx context.Context) error {
 		// Anti-probing via VerifyClientHelloRandom, for passthrough, is not
 		// necessary here and is not initialized.
 		quicConfig := &quic_go.Config{
-			Allow0RTT:               true,
-			HandshakeIdleTimeout:    handshakeIdleTimeout,
-			MaxIdleTimeout:          maxDuration,
-			KeepAlivePeriod:         maxDuration,
-			MaxIncomingStreams:      1,
-			MaxIncomingUniStreams:   -1,
-			VerifyClientHelloRandom: nil,
+			Allow0RTT:             true,
+			HandshakeIdleTimeout:  handshakeIdleTimeout,
+			MaxIdleTimeout:        maxDuration,
+			KeepAlivePeriod:       maxDuration,
+			MaxIncomingStreams:    1,
+			MaxIncomingUniStreams: -1,
 			ServerMaxPacketSizeAdjustment: func(addr net.Addr) int {
 				return GetQUICMaxPacketSizeAdjustment()
 			},

@@ -205,6 +205,7 @@ func (server *TunnelServer) Run() error {
 						errors.Trace(err), LogFields(logFields))
 				},
 				localAddress,
+				support.Config.TunnelProtocolPassthroughAddresses[tunnelProtocol],
 				maxPacketSizeAdjustment,
 				support.Config.ObfuscatedSSHKey,
 				enableGQUIC)

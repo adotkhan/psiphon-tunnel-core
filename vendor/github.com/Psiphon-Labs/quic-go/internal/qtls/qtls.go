@@ -149,8 +149,3 @@ func findExtraData(extras [][]byte) []byte {
 	}
 	return nil
 }
-
-// [Psiphon]
-func ReadClientHelloRandom(data []byte) ([]byte, error) {
-	return tls.ReadClientHelloRandom(data)
-}

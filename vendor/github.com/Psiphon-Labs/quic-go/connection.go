@@ -450,7 +450,6 @@ var newClientConnection = func(
 
 		// [Psiphon]
 		conf.ClientHelloSeed,
-		conf.GetClientHelloRandom,
 
 		enable0RTT,
 		s.rttStats,

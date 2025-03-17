@@ -219,6 +219,8 @@ func MakeDialParameters(
 	candidateNumber int,
 	establishedTunnelsCount int) (*DialParameters, error) {
 
+	fmt.Printf(">> serverEntry: %v\n", serverEntry.IpAddress)
+
 	// Note: a subset of this code is duplicated in
 	// MakeInproxyBrokerDialParameters and makeFrontedHTTPClient, and all
 	// functions need to be updated when, e.g., new TLS obfuscation

@@ -144,6 +144,7 @@ func Listen(
 	logger common.Logger,
 	irregularTunnelLogger func(string, error, common.LogFields),
 	address string,
+	passthroughAddress string,
 	additionalMaxPacketSizeAdjustment int,
 	obfuscationKey string,
 	enableGQUIC bool) (net.Listener, error) {
@@ -202,18 +203,12 @@ func Listen(
 	clientRandomHistory := obfuscator.NewSeedHistory(
 		&obfuscator.SeedHistoryConfig{SeedTTL: obfuscator.TLS_PASSTHROUGH_HISTORY_TTL})
 
-	verifyClientHelloRandom := func(remoteAddr net.Addr, clientHelloRandom []byte) bool {
-
-		ok := obfuscator.VerifyTLSPassthroughMessage(
+	passthroughVerifyMessage := func(clientHelloRandom []byte) bool {
+		return obfuscator.VerifyTLSPassthroughMessage(
 			true, obfuscationKey, clientHelloRandom)
-		if !ok {
-			irregularTunnelLogger(
-				common.IPAddressFromAddr(remoteAddr),
-				errors.TraceNew("invalid client random message"),
-				nil)
-			return false
-		}
+	}
 
+	passthroughHistoryAddNew := func(clientIP string, clientRandom []byte) bool {
 		// Replay history is set to non-strict mode, allowing for a legitimate
 		// client to resend its Initial packet, as may happen. Since the
 		// source _port_ should be the same as the source IP in this case, we use
@@ -226,15 +221,22 @@ func Listen(
 		strictMode := false
 
 		ok, logFields := clientRandomHistory.AddNew(
-			strictMode, remoteAddr.String(), "client-hello-random", clientHelloRandom)
+			strictMode, clientIP, "client-hello-random", clientRandom)
 		if !ok && logFields != nil {
 			irregularTunnelLogger(
-				common.IPAddressFromAddr(remoteAddr),
+				clientIP,
 				errors.TraceNew("duplicate client random message"),
 				*logFields)
 		}
 
 		return ok
+	}
+
+	passthroughLogInvalidMessage := func(clientIP string) {
+		irregularTunnelLogger(
+			clientIP,
+			errors.TraceNew("invalid client random message"),
+			nil)
 	}
 
 	var quicListener quicListener
@@ -252,7 +254,10 @@ func Listen(
 		tlsConfig, ietfQUICConfig, err := makeServerIETFConfig(
 			obfuscatedPacketConn,
 			additionalMaxPacketSizeAdjustment,
-			verifyClientHelloRandom,
+			passthroughAddress,
+			passthroughVerifyMessage,
+			passthroughHistoryAddNew,
+			passthroughLogInvalidMessage,
 			tlsCertificate,
 			obfuscationKey)
 
@@ -283,7 +288,10 @@ func Listen(
 			logger,
 			obfuscatedPacketConn,
 			additionalMaxPacketSizeAdjustment,
-			verifyClientHelloRandom,
+			passthroughAddress,
+			passthroughVerifyMessage,
+			passthroughHistoryAddNew,
+			passthroughLogInvalidMessage,
 			tlsCertificate,
 			obfuscationKey)
 		if err != nil {
@@ -304,13 +312,21 @@ func Listen(
 func makeServerIETFConfig(
 	conn *ObfuscatedPacketConn,
 	additionalMaxPacketSizeAdjustment int,
-	verifyClientHelloRandom func(net.Addr, []byte) bool,
+	passthroughAddress string,
+	passthroughVerifyMessage func(clientRandom []byte) bool,
+	passthroughHistoryAddNew func(clientIP string, clientRandom []byte) bool,
+	passthroughLogInvalidMessage func(clientIP string),
 	tlsCertificate tls.Certificate,
 	sharedSecret string) (*tls.Config, *ietf_quic.Config, error) {
 
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{tlsCertificate},
 		NextProtos:   []string{getALPN(ietfQUIC1VersionNumber)},
+
+		PassthroughAddress:           passthroughAddress,
+		PassthroughVerifyMessage:     passthroughVerifyMessage,
+		PassthroughHistoryAddNew:     passthroughHistoryAddNew,
+		PassthroughLogInvalidMessage: passthroughLogInvalidMessage,
 	}
 
 	if sharedSecret != "" {
@@ -353,7 +369,6 @@ func makeServerIETFConfig(
 		// TODO: add jitter to keep alive period
 		KeepAlivePeriod: CLIENT_IDLE_TIMEOUT / 2,
 
-		VerifyClientHelloRandom:       verifyClientHelloRandom,
 		ServerMaxPacketSizeAdjustment: serverMaxPacketSizeAdjustment,
 	}
 
@@ -1187,7 +1202,6 @@ func dialQUIC(
 			Versions: []ietf_quic.Version{
 				ietf_quic.Version(versionNumber)},
 			ClientHelloSeed:               clientHelloSeed,
-			GetClientHelloRandom:          getClientHelloRandom,
 			ClientMaxPacketSizeAdjustment: maxPacketSizeAdjustment,
 			DisablePathMTUDiscovery:       disablePathMTUDiscovery,
 		}
@@ -1211,6 +1225,7 @@ func dialQUIC(
 			NextProtos:             []string{getALPN(versionNumber)},
 			ServerName:             sni,
 			ClientSessionCache:     tlsClientSessionCache,
+			GetClientHelloRandom:   getClientHelloRandom,
 		}
 
 		// Creating a session state and storing it in the TLS cache to be used
@@ -1426,7 +1441,10 @@ func newMuxListener(
 	logger common.Logger,
 	conn *ObfuscatedPacketConn,
 	additionalMaxPacketSizeAdjustment int,
-	verifyClientHelloRandom func(net.Addr, []byte) bool,
+	passthroughAddress string,
+	passthroughVerifyMessage func(clientRandom []byte) bool,
+	passthroughHistoryAddNew func(clientIP string, clientRandom []byte) bool,
+	passthroughLogInvalidMessage func(clientIP string),
 	tlsCertificate tls.Certificate,
 	sharedSecret string) (*muxListener, error) {
 
@@ -1449,7 +1467,10 @@ func newMuxListener(
 	tlsConfig, ietfQUICConfig, err := makeServerIETFConfig(
 		conn,
 		additionalMaxPacketSizeAdjustment,
-		verifyClientHelloRandom,
+		passthroughAddress,
+		passthroughVerifyMessage,
+		passthroughHistoryAddNew,
+		passthroughLogInvalidMessage,
 		tlsCertificate,
 		sharedSecret)
 	if err != nil {

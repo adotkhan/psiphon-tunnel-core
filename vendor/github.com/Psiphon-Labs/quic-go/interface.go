@@ -352,20 +352,6 @@ type Config struct {
 	ClientHelloSeed *prng.Seed
 
 	// [Psiphon]
-	// GetClientHelloRandom is used by the QUIC client to supply a specific
-	// value in the TLS Client Hello random field. This is used to send an
-	// anti-probing message, indistinguishable from random, that proves
-	// knowlegde of a shared secret key.
-	GetClientHelloRandom func() ([]byte, error)
-
-	// [Psiphon]
-	// VerifyClientHelloRandom is used by the QUIC server to verify that the
-	// TLS Client Hello random field, supplied in the Initial packet for a
-	// new connection, was created using the shared secret key and is not
-	// replayed.
-	VerifyClientHelloRandom func(net.Addr, []byte) bool
-
-	// [Psiphon]
 	// ClientMaxPacketSizeAdjustment indicates that the max packet size should
 	// be reduced by the specified amount. This is used to reserve space for
 	// packet obfuscation overhead while remaining at or under the 1280

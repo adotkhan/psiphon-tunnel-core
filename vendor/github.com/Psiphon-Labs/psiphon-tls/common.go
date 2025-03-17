@@ -839,7 +839,7 @@ type Config struct {
 	// certificate. VerifyPeerCertificate and VerifyConnection are not called
 	// when ECH is rejected, even if set, and InsecureSkipVerify is ignored.
 	EncryptedClientHelloRejectionVerify func(ConnectionState) error
-	
+
 	// [Psiphon]
 	// ClientHelloPRNG is used for Client Hello randomization and replay.
 	ClientHelloPRNG *prng.PRNG
@@ -987,7 +987,14 @@ func (c *Config) Clone() *Config {
 		autoSessionTicketKeys:               c.autoSessionTicketKeys,
 
 		// [Psiphon]
-		InsecureSkipTimeVerify:      c.InsecureSkipTimeVerify,
+		InsecureSkipTimeVerify:       c.InsecureSkipTimeVerify,
+		ClientHelloPRNG:              c.ClientHelloPRNG,
+		GetClientHelloRandom:         c.GetClientHelloRandom,
+		UseObfuscatedSessionTickets:  c.UseObfuscatedSessionTickets,
+		PassthroughAddress:           c.PassthroughAddress,
+		PassthroughVerifyMessage:     c.PassthroughVerifyMessage,
+		PassthroughHistoryAddNew:     c.PassthroughHistoryAddNew,
+		PassthroughLogInvalidMessage: c.PassthroughLogInvalidMessage,
 	}
 }
 

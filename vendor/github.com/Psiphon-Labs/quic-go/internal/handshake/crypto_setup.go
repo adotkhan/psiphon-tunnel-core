@@ -76,7 +76,6 @@ func NewCryptoSetupClient(
 
 	// [Psiphon]
 	clientHelloSeed *prng.Seed,
-	getClientHelloRandom func() ([]byte, error),
 
 	enable0RTT bool,
 	rttStats *utils.RTTStats,
@@ -88,7 +87,7 @@ func NewCryptoSetupClient(
 	// [Psiphon]
 	// Instantiate the PRNG here as it's used in sequence in two places:
 	// TransportParameters.Marshal, for the quic_transport_parameters extension;
-	// and then in qtls.clientHelloMsg.marshal.
+	// and then in psiphon-tls.clientHelloMsg.marshal.
 	var clientHelloPRNG *prng.PRNG
 	if clientHelloSeed != nil {
 		clientHelloPRNG = prng.NewPRNGWithSeed(clientHelloSeed)
@@ -109,7 +108,6 @@ func NewCryptoSetupClient(
 
 	// [Psiphon]
 	tlsConf.ClientHelloPRNG = clientHelloPRNG
-	tlsConf.GetClientHelloRandom = getClientHelloRandom
 
 	quicConf := &tls.QUICConfig{TLSConfig: tlsConf}
 	qtls.SetupConfigForClient(quicConf, cs.marshalDataForSessionState, cs.handleDataFromSessionState)
@@ -652,7 +650,6 @@ func (h *cryptoSetup) ConnectionState() ConnectionState {
 func (h *cryptoSetup) TLSConnectionMetrics() tls.ConnectionMetrics {
 	return h.conn.TLSConnectionMetrics()
 }
-
 
 func wrapError(err error) error {
 	if alertErr := tls.AlertError(0); errors.As(err, &alertErr) {
