@@ -32,7 +32,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	tls "github.com/Psiphon-Labs/psiphon-tls"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/errors"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/fragmentor"
@@ -45,7 +44,6 @@ import (
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/resolver"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/transforms"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/values"
-	utls "github.com/Psiphon-Labs/utls"
 	lrucache "github.com/cognusion/go-cache-lru"
 	"golang.org/x/net/bpf"
 )
@@ -173,7 +171,7 @@ type DialParameters struct {
 	steeringIPCacheKey string          `json:"-"`
 
 	quicTLSClientSessionCache *common.TLSClientSessionCacheWrapper  `json:"-"`
-	tlsClientSessionCache     *common.UtlsClientSessionCacheWrapper `json:"-"`
+	tlsClientSessionCache     *common.UTLSClientSessionCacheWrapper `json:"-"`
 
 	inproxyDialInitialized         bool                         `json:"-"`
 	inproxyBrokerClient            *inproxy.BrokerClient        `json:"-"`
@@ -208,8 +206,7 @@ type DialParameters struct {
 func MakeDialParameters(
 	config *Config,
 	steeringIPCache *lrucache.Cache,
-	quicTLSClientSessionCache tls.ClientSessionCache,
-	tlsClientSessionCache utls.ClientSessionCache,
+	tlsClientSessionCache *common.LRUClientSessionCache,
 	upstreamProxyErrorCallback func(error),
 	canReplay func(serverEntry *protocol.ServerEntry, replayProtocol string) bool,
 	selectProtocol func(serverEntry *protocol.ServerEntry) (string, bool),
@@ -772,7 +769,7 @@ func MakeDialParameters(
 			}
 		}
 
-		dialParams.tlsClientSessionCache = common.WrapUtlsClientSessionCache(tlsClientSessionCache, sessionKey)
+		dialParams.tlsClientSessionCache = common.WrapUTLSClientSessionCache(tlsClientSessionCache, sessionKey)
 
 		if !isReplay {
 			// Remove the cache entry to make a fresh dial when !isReplay.
@@ -913,15 +910,15 @@ func MakeDialParameters(
 				p.WeightedCoinFlip(parameters.QUICDisableClientPathMTUDiscoveryProbability)
 	}
 
-	if quicTLSClientSessionCache != nil && protocol.TunnelProtocolUsesQUIC(dialParams.TunnelProtocol) {
+	if tlsClientSessionCache != nil && protocol.TunnelProtocolUsesQUIC(dialParams.TunnelProtocol) {
 
 		sessionKey, err := serverEntry.GetTLSSessionCacheKeyAddress(dialParams.TunnelProtocol)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
 
-		dialParams.quicTLSClientSessionCache = common.WrapClientSessionCache(
-			quicTLSClientSessionCache,
+		dialParams.quicTLSClientSessionCache = common.WrapTLSClientSessionCache(
+			tlsClientSessionCache,
 			sessionKey)
 
 		if !isReplay {

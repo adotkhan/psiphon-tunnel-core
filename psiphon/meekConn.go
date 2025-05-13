@@ -147,7 +147,7 @@ type MeekConfig struct {
 
 	// TLSClientSessionCache specifies the TLS session cache to use for
 	// HTTPS (non-QUIC) Meek connections.
-	TLSClientSessionCache *common.UtlsClientSessionCacheWrapper
+	TLSClientSessionCache *common.UTLSClientSessionCacheWrapper
 
 	// TLSFragmentClientHello specifies whether to fragment the TLS Client Hello.
 	TLSFragmentClientHello bool

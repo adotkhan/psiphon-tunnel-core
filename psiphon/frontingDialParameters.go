@@ -14,7 +14,6 @@ import (
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/prng"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/protocol"
 	"github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon/common/resolver"
-	utls "github.com/Psiphon-Labs/utls"
 	"golang.org/x/net/bpf"
 )
 
@@ -410,7 +409,7 @@ func (f *FrontedMeekDialParameters) prepareDialConfigs(
 		// parameters.FrontingSpecs.SelectParameters has couple of issues. For some providers there's
 		// only a couple or even just one possible value, in other cases there are millions of possible values
 		// and cached values won't be used as often as they ought to be.
-		TLSClientSessionCache: common.WrapUtlsClientSessionCache(utls.NewLRUClientSessionCache(0), f.DialAddress),
+		TLSClientSessionCache: common.WrapUTLSClientSessionCache(common.NewLRUClientSessionCache(0), f.DialAddress),
 	}
 
 	if !skipVerify {

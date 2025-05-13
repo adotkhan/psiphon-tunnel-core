@@ -677,7 +677,7 @@ func runTestInproxy(doMustUpgrade bool) error {
 					GetQUICMaxPacketSizeAdjustment(),
 					false,
 					false,
-					common.WrapClientSessionCache(tls.NewLRUClientSessionCache(0), ""),
+					common.WrapTLSClientSessionCache(common.NewLRUClientSessionCache(0), ""),
 				)
 				if err != nil {
 					return errors.Trace(err)

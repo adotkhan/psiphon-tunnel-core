@@ -246,7 +246,7 @@ func CustomTLSDial(
 
 	// If the hard-coded session key is not set (e.g. FRONTED-MEEK-OSSH), SetSessionKey must be called.
 	// The session key is set to the resolved IP address.
-	if wrappedCache, ok := config.ClientSessionCache.(*common.UtlsClientSessionCacheWrapper); ok {
+	if wrappedCache, ok := config.ClientSessionCache.(*common.UTLSClientSessionCacheWrapper); ok {
 		wrappedCache.SetSessionKey(underlyingConn.RemoteAddr().String())
 	}
 
@@ -504,7 +504,7 @@ func CustomTLSDial(
 		if isTLS13 {
 			// Sets OOB PSK if required.
 			if containsPSKExt(utlsClientHelloID, utlsClientHelloSpec) {
-				if wrappedCache, ok := clientSessionCache.(*common.UtlsClientSessionCacheWrapper); ok {
+				if wrappedCache, ok := clientSessionCache.(*common.UTLSClientSessionCacheWrapper); ok {
 					wrappedCache.Put("", sessionState)
 				} else {
 					return nil, errors.TraceNew("unexpected clientSessionCache type")
