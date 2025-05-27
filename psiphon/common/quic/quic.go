@@ -1279,8 +1279,8 @@ func dialQUIC(
 
 		metrics := quicClientConnMetrics{
 			dialEarly:           dialEarly,
-			tlsClientSentTicket: dialConnection.ConnectionState().TLS.DidResume,
-			tlsDidResume:        dialConnection.TLSConnectionMetrics().ClientSentTicket,
+			tlsClientSentTicket: dialConnection.TLSConnectionMetrics().ClientSentTicket,
+			tlsDidResume:        dialConnection.ConnectionState().TLS.DidResume,
 			obfuscatedPSK:       obfuscatedPSKKey != "",
 		}
 
