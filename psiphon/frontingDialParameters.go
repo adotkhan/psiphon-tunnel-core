@@ -388,6 +388,12 @@ func (f *FrontedMeekDialParameters) prepareDialConfigs(
 			equivilentTunnelProtocol)
 	}
 
+	hardcodedTLSCache, ok := tlsCache.(*common.UtlsClientSessionCacheWrapper)
+	if !ok {
+		// CustomTLSDial will use the resolved IP address as the session key.
+		hardcodedTLSCache = common.WrapUtlsClientSessionCache(tlsCache, common.TLS_NULL_SESSION_KEY)
+	}
+
 	f.meekConfig = &MeekConfig{
 		DiagnosticID:             f.FrontingProviderID,
 		Parameters:               config.GetParameters(),
@@ -406,9 +412,7 @@ func (f *FrontedMeekDialParameters) prepareDialConfigs(
 		ClientTunnelProtocol:     equivilentTunnelProtocol,
 		NetworkLatencyMultiplier: f.NetworkLatencyMultiplier,
 		AdditionalHeaders:        config.MeekAdditionalHeaders,
-
-		// CustomTLSDial will use the resolved IP address as the session key.
-		TLSClientSessionCache: common.WrapUtlsClientSessionCache(tlsCache, common.TLS_NULL_SESSION_KEY),
+		TLSClientSessionCache:    hardcodedTLSCache,
 	}
 
 	if !skipVerify {

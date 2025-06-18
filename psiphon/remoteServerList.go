@@ -474,6 +474,8 @@ func downloadRemoteServerListFile(
 	// MakeDownloadHttpClient will select either a tunneled
 	// or untunneled configuration.
 
+	hardcodedCache := common.WrapUtlsClientSessionCache(tlsCache, common.TLS_NULL_SESSION_KEY)
+
 	payloadSecure := true
 	frontingUseDeviceBinder := true
 	httpClient, tunneled, getParams, err := MakeDownloadHTTPClient(
@@ -481,7 +483,7 @@ func downloadRemoteServerListFile(
 		config,
 		tunnel,
 		untunneledDialConfig,
-		tlsCache,
+		hardcodedCache,
 		skipVerify,
 		disableSystemRootCAs,
 		payloadSecure,
@@ -511,6 +513,7 @@ func downloadRemoteServerListFile(
 	NoticeRemoteServerListResourceDownloadedBytes(sourceURL, bytes, duration)
 
 	if err != nil {
+		hardcodedCache.RemoveCacheEntry()
 		return "", nil, errors.Trace(err)
 	}
 
