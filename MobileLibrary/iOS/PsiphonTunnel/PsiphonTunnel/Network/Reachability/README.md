@@ -1,5 +1,3 @@
 # Reachability
 
-This code is from: 
-
-https://developer.apple.com/library/content/samplecode/Reachability/Introduction/Intro.html
+Reachability is implemented with `NWPathMonitor` via `DefaultRouteMonitor`.

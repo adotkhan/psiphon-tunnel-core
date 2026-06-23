@@ -37,15 +37,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSSet<NSString*>*)activeInterfaces:(NSError *_Nullable *_Nonnull)outError;
 
 /// Returns the active interface name.
-/// @param reachability ReachabilityProtocol implementer used to determine active interface on iOS >=12.
-/// @param currentNetworkStatus Used to determine active interface on iOS <12.
+/// @param reachability ReachabilityProtocol implementer used to determine active interface.
+/// @param currentNetworkStatus Current network reachability status.
 /// @param outError If non-nil, then an error occurred while determining the active interface.
 + (NSString*)getActiveInterfaceWithReachability:(id<ReachabilityProtocol>)reachability
                         andCurrentNetworkStatus:(NetworkReachability)currentNetworkStatus
                                           error:(NSError *_Nullable *_Nonnull)outError;
 /// Returns the active interface address.
-/// @param reachability ReachabilityProtocol implementer used to determine active interface on iOS >=12.
-/// @param currentNetworkStatus Used to determine active interface on iOS <12.
+/// @param reachability ReachabilityProtocol implementer used to determine active interface.
+/// @param currentNetworkStatus Current network reachability status.
 /// @param outError If non-nil, then an error occurred while determining the active interface.
 + (NSString*)getActiveInterfaceAddressWithReachability:(id<ReachabilityProtocol>)reachability
                                andCurrentNetworkStatus:(NetworkReachability)currentNetworkStatus

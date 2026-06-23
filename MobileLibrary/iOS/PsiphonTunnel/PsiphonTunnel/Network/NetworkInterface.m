@@ -140,82 +140,29 @@
     return upIffList;
 }
 
-/*!
- @brief Returns name of default active network interface from the provided list of active interfaces.
- @param upIffList List of active network interfaces.
- @return Active interface name, nil otherwise.
- @warning Use DefaultRouteMonitor instead on iOS 12.0+.
- */
-+ (NSString *)getActiveInterface:(NSSet<NSString*>*)upIffList
-            currentNetworkStatus:(NetworkReachability)currentNetworkStatus {
-
-    // TODO: following is a heuristic for choosing active network interface
-    // Only Wi-Fi and Cellular interfaces are considered
-    // @see : https://forums.developer.apple.com/thread/76711
-    NSArray *iffPriorityList = @[@"en0", @"pdp_ip0"];
-    if (currentNetworkStatus == NetworkReachabilityReachableViaCellular) {
-        iffPriorityList = @[@"pdp_ip0", @"en0"];
-    }
-    for (NSString * key in iffPriorityList) {
-        for (NSString * upIff in upIffList) {
-            if ([key isEqualToString:upIff]) {
-                return [NSString stringWithString:upIff];
-            }
-        }
-    }
-
-    return nil;
-}
-
 + (NSString*)getActiveInterfaceWithReachability:(id<ReachabilityProtocol>)reachability
                         andCurrentNetworkStatus:(NetworkReachability)currentNetworkStatus
                                           error:(NSError *_Nullable *_Nonnull)outError {
 
     *outError = nil;
+    (void)currentNetworkStatus;
 
     NSString *activeInterface;
-
-    if (@available(iOS 12.0, *)) {
-        // Note: it is hypothetically possible that NWPathMonitor emits a new path after
-        // getActiveInterfaceWithReachability is called. This creates a race between
-        // DefaultRouteMonitor updating its internal state and getActiveInterfaceWithReachability
-        // retrieving the active interface from that internal state.
-        // Therefore the following sequence of events is possible:
-        // - NWPathMonitor emits path that is satisfied or satisfiable
-        // - ReachabilityProtocol consumer sees there is connectivity and calls
-        //   getActiveInterfaceWithReachability
-        // - NWPathMonitor emits path that is unsatisfied or invalid
-        // - getActiveInterfaceWithReachability either: a) does not observe update and returns the
-        //   previously active interface; or b) observes update and cannot find active interface.
-        // In both scenarios the reachability state will change to unreachable and it is up to the
-        // consumer to call getActiveInterfaceWithReachability again once it becomes reachable again.
-        DefaultRouteMonitor *gwMonitor = (DefaultRouteMonitor*)reachability;
-        if (gwMonitor == nil) {
-            *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: @"getActiveInterfaceWithReachability: DefaultRouteMonitor nil"}];
-            return @"";
-        }
-        NetworkPathState *state = [gwMonitor pathState];
-        if (state == nil) {
-            *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: @"getActiveInterfaceWithReachability: network path state nil"}];
-            return @"";
-        }
-        // Note: could fallback on heuristic for iOS <12.0 if nil
-        activeInterface = state.defaultActiveInterfaceName;
-    } else {
-        NSError *err;
-        NSSet<NSString*>* upIffList = [NetworkInterface activeInterfaces:&err];
-        if (err != nil) {
-            NSString *localizedDescription = [NSString stringWithFormat:@"getActiveInterfaceWithReachability: error getting active interfaces %@", err.localizedDescription];
-            *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: localizedDescription}];
-            return @"";
-        }
-        if (upIffList == nil) {
-            *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: @"getActiveInterfaceWithReachability: no active interfaces"}];
-            return @"";
-        }
-        activeInterface = [NetworkInterface getActiveInterface:upIffList
-                                          currentNetworkStatus:currentNetworkStatus];
+    // Note: it is hypothetically possible that NWPathMonitor emits a new path after
+    // getActiveInterfaceWithReachability is called. This creates a race between
+    // DefaultRouteMonitor updating its internal state and getActiveInterfaceWithReachability
+    // retrieving the active interface from that internal state.
+    DefaultRouteMonitor *gwMonitor = (DefaultRouteMonitor*)reachability;
+    if (gwMonitor == nil) {
+        *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: @"getActiveInterfaceWithReachability: DefaultRouteMonitor nil"}];
+        return @"";
     }
+    NetworkPathState *state = [gwMonitor pathState];
+    if (state == nil) {
+        *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: @"getActiveInterfaceWithReachability: network path state nil"}];
+        return @"";
+    }
+    activeInterface = state.defaultActiveInterfaceName;
 
     if (activeInterface == nil) {
         *outError = [[NSError alloc] initWithDomain:@"iOSLibrary" code:1 userInfo:@{NSLocalizedDescriptionKey: @"getActiveInterfaceWithReachability: no active interface"}];

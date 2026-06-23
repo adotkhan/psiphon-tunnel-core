@@ -29,10 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// See network ID requirements here:
 /// https://godoc.org/github.com/Psiphon-Labs/psiphon-tunnel-core/psiphon#NetworkIDGetter
-/// @param reachability ReachabilityProtocol implementer used to determine active interface on iOS >=12 when
+/// @param reachability ReachabilityProtocol implementer used to determine active interface when
 /// currentNetworkStatus is NetworkReachabilityReachableViaWired.
-/// @param currentNetworkStatus Used to determine network ID and, on iOS <12, to determine the active interface when
-/// currentNetworkStatus is NetworkReachabilityReachableViaWired.
+/// @param currentNetworkStatus Used to determine network ID.
 /// @param tunnelWholeDevice False if library is used in non-VPN mode, true otherwise.
 /// @param outWarn If non-nil, then a non-fatal error occurred while determining the network ID and a valid network ID will still be returned.
 + (NSString *)getNetworkIDWithReachability:(id<ReachabilityProtocol>)reachability

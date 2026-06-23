@@ -69,12 +69,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             self.psiphonTunnel?.appResumed()
 
-            // The Psiphon Library exposes reachability functions, which can be used
-            // for detecting internet status.
-
-            let reachability = Reachability.forInternetConnection()
-            let networkStatus = reachability?.currentReachabilityStatus()
-            NSLog("Internet is reachable? \(networkStatus != NotReachable)")
+            // The Psiphon Library exposes reachability status while the tunnel is running.
+            var networkStatus = NetworkReachabilityNotReachable
+            if self.psiphonTunnel?.getNetworkReachabilityStatus(&networkStatus) == true {
+                NSLog("Internet is reachable? \(networkStatus != NetworkReachabilityNotReachable)")
+            }
         }
     }
 

@@ -12,8 +12,6 @@
 		4E89F7FF1E2ED3CE00005F4C /* LookupIPv6.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E89F7FD1E2ED3CE00005F4C /* LookupIPv6.h */; };
 		52BE676825B8A615002DB553 /* PsiphonClientPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BE676725B8A615002DB553 /* PsiphonClientPlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BE676D25B8A635002DB553 /* PsiphonClientPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BE676B25B8A635002DB553 /* PsiphonClientPlatform.m */; };
-		662659271DD270E900872F6C /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 662659251DD270E900872F6C /* Reachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		662659281DD270E900872F6C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 662659261DD270E900872F6C /* Reachability.m */; };
 		669541B71EF9FECF0038E125 /* build-git-commit.txt in Resources */ = {isa = PBXBuildFile; fileRef = 669541B61EF9FECF0038E125 /* build-git-commit.txt */; };
 		66BAD3351E525FBC00CD06DE /* JailbreakCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 66BAD3331E525FBC00CD06DE /* JailbreakCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		66BAD3361E525FBC00CD06DE /* JailbreakCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BAD3341E525FBC00CD06DE /* JailbreakCheck.m */; };
@@ -41,8 +39,6 @@
 		CE676F2525FA818200F7DB13 /* ReachabilityProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = CE676F2325FA818200F7DB13 /* ReachabilityProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CE676F2A25FA82DA00F7DB13 /* DefaultRouteMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = CE676F2825FA82DA00F7DB13 /* DefaultRouteMonitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CE676F2B25FA82DA00F7DB13 /* DefaultRouteMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = CE676F2925FA82DA00F7DB13 /* DefaultRouteMonitor.m */; };
-		CE676F2F25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = CE676F2D25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.h */; };
-		CE676F3025FA830C00F7DB13 /* Reachability+ReachabilityProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = CE676F2E25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.m */; };
 		CE9549F525C8AAEE00F9AF86 /* Redactor.h in Headers */ = {isa = PBXBuildFile; fileRef = CE9549F325C8AAEE00F9AF86 /* Redactor.h */; };
 		CE9549F625C8AAEE00F9AF86 /* Redactor.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9549F425C8AAEE00F9AF86 /* Redactor.m */; };
 		CEC229FC24F047E700534D04 /* PsiphonProviderNoticeHandlerShim.h in Headers */ = {isa = PBXBuildFile; fileRef = CEC229FA24F047E700534D04 /* PsiphonProviderNoticeHandlerShim.h */; };
@@ -77,8 +73,6 @@
 		4E89F7FD1E2ED3CE00005F4C /* LookupIPv6.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LookupIPv6.h; sourceTree = "<group>"; };
 		52BE676725B8A615002DB553 /* PsiphonClientPlatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PsiphonClientPlatform.h; sourceTree = "<group>"; };
 		52BE676B25B8A635002DB553 /* PsiphonClientPlatform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PsiphonClientPlatform.m; sourceTree = "<group>"; };
-		662659251DD270E900872F6C /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
-		662659261DD270E900872F6C /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		6685BDD81E300AC200F0E414 /* strip-frameworks.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = "strip-frameworks.sh"; path = "scripts/strip-frameworks.sh"; sourceTree = "<group>"; };
 		669541B61EF9FECF0038E125 /* build-git-commit.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "build-git-commit.txt"; sourceTree = "<group>"; };
 		66BAD3331E525FBC00CD06DE /* JailbreakCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JailbreakCheck.h; sourceTree = "<group>"; };
@@ -110,8 +104,6 @@
 		CE676F2325FA818200F7DB13 /* ReachabilityProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReachabilityProtocol.h; sourceTree = "<group>"; };
 		CE676F2825FA82DA00F7DB13 /* DefaultRouteMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DefaultRouteMonitor.h; sourceTree = "<group>"; };
 		CE676F2925FA82DA00F7DB13 /* DefaultRouteMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DefaultRouteMonitor.m; sourceTree = "<group>"; };
-		CE676F2D25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Reachability+ReachabilityProtocol.h"; sourceTree = "<group>"; };
-		CE676F2E25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Reachability+ReachabilityProtocol.m"; sourceTree = "<group>"; };
 		CE9549F325C8AAEE00F9AF86 /* Redactor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Redactor.h; sourceTree = "<group>"; };
 		CE9549F425C8AAEE00F9AF86 /* Redactor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Redactor.m; sourceTree = "<group>"; };
 		CEC229FA24F047E700534D04 /* PsiphonProviderNoticeHandlerShim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PsiphonProviderNoticeHandlerShim.h; sourceTree = "<group>"; };
@@ -268,13 +260,9 @@
 		CECF01542538FC5900CD3E5C /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
-				662659251DD270E900872F6C /* Reachability.h */,
-				662659261DD270E900872F6C /* Reachability.m */,
 				CE676F2325FA818200F7DB13 /* ReachabilityProtocol.h */,
 				CE676F2825FA82DA00F7DB13 /* DefaultRouteMonitor.h */,
 				CE676F2925FA82DA00F7DB13 /* DefaultRouteMonitor.m */,
-				CE676F2D25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.h */,
-				CE676F2E25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.m */,
 			);
 			path = Reachability;
 			sourceTree = "<group>";
@@ -312,9 +300,7 @@
 				CE3D1DA523906003009A4AF6 /* Backups.h in Headers */,
 				66BAD3351E525FBC00CD06DE /* JailbreakCheck.h in Headers */,
 				4E89F7FF1E2ED3CE00005F4C /* LookupIPv6.h in Headers */,
-				CE676F2F25FA830C00F7DB13 /* Reachability+ReachabilityProtocol.h in Headers */,
 				CE676F2A25FA82DA00F7DB13 /* DefaultRouteMonitor.h in Headers */,
-				662659271DD270E900872F6C /* Reachability.h in Headers */,
 				66BDB05D1DC26CCC0079384C /* SBJson4StreamParser.h in Headers */,
 				52BE676825B8A615002DB553 /* PsiphonClientPlatform.h in Headers */,
 				CECF01492538DD0B00CD3E5C /* PsiphonProviderNetwork.h in Headers */,
@@ -437,6 +423,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		669541B51EF9FDB60038E125 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -467,13 +454,11 @@
 				66BAD3361E525FBC00CD06DE /* JailbreakCheck.m in Sources */,
 				CE676F2B25FA82DA00F7DB13 /* DefaultRouteMonitor.m in Sources */,
 				CEDBA51325B7737C007685E2 /* NetworkInterface.m in Sources */,
-				CE676F3025FA830C00F7DB13 /* Reachability+ReachabilityProtocol.m in Sources */,
 				66BDB0681DC26CCC0079384C /* SBJson4Writer.m in Sources */,
 				66BDB0621DC26CCC0079384C /* SBJson4StreamTokeniser.m in Sources */,
 				66BDB0441DA6C7DD0079384C /* PsiphonTunnel.m in Sources */,
 				CEC229FD24F047E700534D04 /* PsiphonProviderNoticeHandlerShim.m in Sources */,
 				CECF014A2538DD0B00CD3E5C /* PsiphonProviderNetwork.m in Sources */,
-				662659281DD270E900872F6C /* Reachability.m in Sources */,
 				66BDB0601DC26CCC0079384C /* SBJson4StreamParserState.m in Sources */,
 				CE3D1DA623906003009A4AF6 /* Backups.m in Sources */,
 				CE9549F625C8AAEE00F9AF86 /* Redactor.m in Sources */,
@@ -541,7 +526,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -587,7 +572,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -611,7 +596,7 @@
 				EXCLUDED_ARCHS = armv7;
 				INFOPLIST_FILE = PsiphonTunnel/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -642,7 +627,7 @@
 				EXCLUDED_ARCHS = armv7;
 				INFOPLIST_FILE = PsiphonTunnel/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

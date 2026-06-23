@@ -212,7 +212,7 @@ function xcodebuild_for_platform() {
 # Build the PsiphonTunnel.framework for iOS, iOS Simulator, Mac Catalyst and macOS.
 #
 
-gomobile_build_for_platform "-target 'macos,ios,iossimulator' -iosversion '10.0'"
+gomobile_build_for_platform "-target 'macos,ios,iossimulator' -iosversion '13.1'"
 xcodebuild_for_platform "ios.xcarchive" " -destination 'generic/platform=iOS' EXCLUDED_ARCHS='armv7'"  # Excludes 32-bit ARM: EXCLUDED_ARCHS="armv7"
 xcodebuild_for_platform "macos.xcarchive" "-sdk macosx EXCLUDED_ARCHS='i386'"
 

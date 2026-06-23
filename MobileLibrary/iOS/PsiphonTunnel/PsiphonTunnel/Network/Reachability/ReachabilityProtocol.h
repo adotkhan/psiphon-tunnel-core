@@ -32,10 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// ReachabilityProtocol is a protocol for monitoring the reachability of a target network destination. For example, a protocol
 /// implementation could provide reachability information for the default gateway over a specific network interface.
-/// @note The purpose of ReachabilityProtocol is to bridge the gap between Apple's old Reachability APIs and the new
-/// NWPathMonitor (iOS 12.0+) with a common interface that allows each to be used interchangeably. Using a common interface
-/// simplifies supporting older clients which cannot target NWPathMonitor until the minimum iOS target is 12.0+, at which point the
-/// code targeting the legacy Reachability APIs can be removed.
+/// @note The purpose of ReachabilityProtocol is to provide a common interface for NWPathMonitor-backed reachability
+/// information.
 @protocol ReachabilityProtocol <NSObject>
 
 /// Name of reachability notifications emitted from the default notification center. See comment for `startNotifier`.

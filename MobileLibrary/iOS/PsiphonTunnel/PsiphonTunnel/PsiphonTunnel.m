@@ -43,7 +43,6 @@
 #import "PsiphonClientPlatform.h"
 #import "Redactor.h"
 #import "ReachabilityProtocol.h"
-#import "Reachability+ReachabilityProtocol.h"
 #import "DefaultRouteMonitor.h"
 
 NSErrorDomain _Nonnull const PsiphonTunnelErrorDomain = @"com.psiphon3.ios.PsiphonTunnelErrorDomain";
@@ -170,14 +169,10 @@ typedef NS_ERROR_ENUM(PsiphonTunnelErrorDomain, PsiphonTunnelErrorCode) {
     atomic_init(&self->localSocksProxyPort, 0);
     atomic_init(&self->localHttpProxyPort, 0);
     // reachability for the default route (destination 0.0.0.0/0)
-    if (@available(iOS 12.0, *)) {
-        void (^logNotice)(NSString * _Nonnull) = ^void(NSString * _Nonnull noticeJSON) {
-            [self logMessage:[@"DefaultRouteMonitor: " stringByAppendingString:noticeJSON]];
-        };
-        self->reachability = [[DefaultRouteMonitor alloc] initWithLogger:logNotice];
-    } else {
-        self->reachability = [Reachability reachabilityForInternetConnection];
-    }
+    void (^logNotice)(NSString * _Nonnull) = ^void(NSString * _Nonnull noticeJSON) {
+        [self logMessage:[@"DefaultRouteMonitor: " stringByAppendingString:noticeJSON]];
+    };
+    self->reachability = [[DefaultRouteMonitor alloc] initWithLogger:logNotice];
     atomic_init(&self->currentNetworkStatus, NetworkReachabilityNotReachable);
     self->tunnelWholeDevice = FALSE;
     atomic_init(&self->usingNoticeFiles, FALSE);
@@ -1678,14 +1673,14 @@ typedef NS_ERROR_ENUM(PsiphonTunnelErrorDomain, PsiphonTunnelErrorCode) {
     // processed to ensure ordering; otherwise (2) may overwrite the current network status with a
     // stale value in the unlikely event where a reachability changed notification is emitted
     // immediately after (1).
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(internetReachabilityChanged:) name:kReachabilityChangedNotification object :nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(internetReachabilityChanged:) name:[DefaultRouteMonitor reachabilityChangedNotification] object :nil];
     [self->reachability startNotifier];
     atomic_store(&self->currentNetworkStatus, [self->reachability reachabilityStatus]);
 }
 
 - (void)stopInternetReachabilityMonitoring {
     [self->reachability stopNotifier];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:[DefaultRouteMonitor reachabilityChangedNotification] object:nil];
 }
 
 - (void)internetReachabilityChanged:(NSNotification *)note {
@@ -1707,21 +1702,16 @@ typedef NS_ERROR_ENUM(PsiphonTunnelErrorDomain, PsiphonTunnelErrorCode) {
 
         // Pass current reachability through to the delegate
         // as soon as a network reachability change is detected
-        if (@available(iOS 12.0, *)) {
-            ReachabilityChangedNotification *notif = [note object];
-            networkStatus = notif.reachabilityStatus;
-            if (notif.prevDefaultActiveInterfaceName == nil && notif.curDefaultActiveInterfaceName == nil) {
-                // no interface change
-            } else if (notif.prevDefaultActiveInterfaceName == nil || notif.curDefaultActiveInterfaceName == nil) {
-                // interface appeared or disappeared
-                interfaceChanged = TRUE;
-            } else if (![notif.prevDefaultActiveInterfaceName isEqualToString:notif.curDefaultActiveInterfaceName]) {
-                // active interface changed
-                interfaceChanged = TRUE;
-            }
-        } else {
-            Reachability* currentReachability = [note object];
-            networkStatus = [currentReachability reachabilityStatus];
+        ReachabilityChangedNotification *notif = [note object];
+        networkStatus = notif.reachabilityStatus;
+        if (notif.prevDefaultActiveInterfaceName == nil && notif.curDefaultActiveInterfaceName == nil) {
+            // no interface change
+        } else if (notif.prevDefaultActiveInterfaceName == nil || notif.curDefaultActiveInterfaceName == nil) {
+            // interface appeared or disappeared
+            interfaceChanged = TRUE;
+        } else if (![notif.prevDefaultActiveInterfaceName isEqualToString:notif.curDefaultActiveInterfaceName]) {
+            // active interface changed
+            interfaceChanged = TRUE;
         }
 
         if ([self.tunneledAppDelegate respondsToSelector:@selector(onInternetReachabilityChanged:)]) {
@@ -1813,7 +1803,7 @@ typedef NS_ERROR_ENUM(PsiphonTunnelErrorDomain, PsiphonTunnelErrorCode) {
 
     *outError = nil;
 
-    const int sessionIDLen = 16;
+    enum { sessionIDLen = 16 };
     uint8_t sessionID[sessionIDLen];
     int result = SecRandomCopyBytes(kSecRandomDefault, sessionIDLen, sessionID);
     if (result != errSecSuccess) {

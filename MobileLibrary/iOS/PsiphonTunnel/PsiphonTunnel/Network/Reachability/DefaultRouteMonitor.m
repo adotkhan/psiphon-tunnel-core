@@ -268,7 +268,6 @@ NetworkReachability nw_interface_type_network_reachability(nw_interface_type_t i
     self.pathState = newPathState;
 
     if (emitNotification == TRUE) {
-        // Backwards compatibility with Reachability
         ReachabilityChangedNotification *notif =
             [[ReachabilityChangedNotification alloc]
              initWithReachabilityStatus:self.pathState.status
