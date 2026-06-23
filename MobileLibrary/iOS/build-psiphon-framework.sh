@@ -4,12 +4,12 @@
 #
 # Key steps:
 # 1. Initializes a temporary Go environment and installs (vendored) `gomobile`.
-# 2. Iteratively builds for different target groups (iOS/Simulator/Mac Catalyst):
-#    a. Generates `Psi.xcframework` (Go bindings) using `gomobile bind` for the current group.
-#    b. Copies this `Psi.xcframework` into the `PsiphonTunnel` Xcode project.
-#    c. Builds the `PsiphonTunnel.framework` for the platform(s) in the current group using `xcodebuild`.
-# 3. Assembles the generated `PsiphonTunnel.framework`s (for iOS, iOS Simulator, Mac Catalyst) into a single `PsiphonTunnel.xcframework`.
-# 4. Creates a zip archive of the final `PsiphonTunnel.xcframework`.
+# 2. Generates a single `Psi.xcframework` (Go bindings) using `gomobile bind` for
+#    all Apple platforms (iOS, iOS Simulator, Mac Catalyst, macOS) in one invocation,
+#    then copies it into the `PsiphonTunnel` Xcode project.
+# 3. Builds the `PsiphonTunnel.framework` for each platform using `xcodebuild`.
+# 4. Assembles the generated `PsiphonTunnel.framework`s (for iOS, iOS Simulator, Mac Catalyst, macOS) into a single `PsiphonTunnel.xcframework`.
+# 5. Creates a zip archive of the final `PsiphonTunnel.xcframework`.
 
 set -e -u -x
 
@@ -212,7 +212,10 @@ function xcodebuild_for_platform() {
 # Build the PsiphonTunnel.framework for iOS, iOS Simulator, Mac Catalyst and macOS.
 #
 
-gomobile_build_for_platform "-target 'macos,ios,iossimulator' -iosversion '13.1'"
+# Generate a single Psi.xcframework covering all Apple platforms. Mac Catalyst
+# requires iOS 13+, so all targets share -iosversion '13.1'.
+gomobile_build_for_platform "-target 'ios,iossimulator,macos,maccatalyst' -iosversion '13.1'"
+
 xcodebuild_for_platform "ios.xcarchive" " -destination 'generic/platform=iOS' EXCLUDED_ARCHS='armv7'"  # Excludes 32-bit ARM: EXCLUDED_ARCHS="armv7"
 xcodebuild_for_platform "macos.xcarchive" "-sdk macosx EXCLUDED_ARCHS='i386'"
 
@@ -220,7 +223,6 @@ xcodebuild_for_platform "macos.xcarchive" "-sdk macosx EXCLUDED_ARCHS='i386'"
 # allows the framework users to build and run on simulators.
 xcodebuild_for_platform "iossimulator.xcarchive" "-sdk iphonesimulator EXCLUDED_ARCHS='i386'" # Excludes 32-bit Intel: EXCLUDED_ARCHS="i386"
 
-gomobile_build_for_platform "-target 'maccatalyst' -iosversion '13.1'"
 xcodebuild_for_platform "maccatalyst.xcarchive" "-destination 'generic/platform=macOS,variant=Mac Catalyst'"
 
 #
