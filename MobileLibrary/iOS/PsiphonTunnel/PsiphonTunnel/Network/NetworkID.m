@@ -22,6 +22,7 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
+#import <TargetConditionals.h>
 
 @implementation NetworkID
 
@@ -64,6 +65,9 @@
         }
         [networkID appendFormat:@"-%@", activeInterfaceAddress];
 #else
+#if TARGET_OS_MACCATALYST
+        if (@available(macCatalyst 14.0, *)) {
+#endif
         NSArray *networkInterfaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
         for (NSString *networkInterfaceName in networkInterfaceNames) {
             NSDictionary *networkInterfaceInfo = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)networkInterfaceName);
@@ -71,11 +75,14 @@
                 [networkID appendFormat:@"-%@", networkInterfaceInfo[(__bridge NSString*)kCNNetworkInfoKeyBSSID]];
             }
         }
+#if TARGET_OS_MACCATALYST
+        }
+#endif
 #endif
     } else if (currentNetworkStatus == NetworkReachabilityReachableViaCellular) {
         [networkID setString:@"MOBILE"];
 
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
         if (@available(iOS 16.0, *)) {
             // Testing showed that the IP address of the active interface uniquely identified the
             // corresponding network and did not change over long periods of time, which makes it a
